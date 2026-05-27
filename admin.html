@@ -714,27 +714,30 @@ function setupEventListeners() {
 }
 
 async function autoGenSlots() {
-  console.log('autoGenSlots called');
-  const from = document.getElementById('autoFrom').value;
-  const to = document.getElementById('autoTo').value;
-  const dur = parseInt(document.getElementById('autoDur').value) || 60;
-  const courtSel = document.getElementById('autoCourt').value;
-  if (!from || !to) { toast('⚠️ يرجى تحديد وقت الفتح والإغلاق', true); return; }
+  const DB_URL = 'https://padel-arena-7b02b-default-rtdb.firebaseio.com';
+  const from = document.getElementById('autoFrom').value || '08:00';
+  const to   = document.getElementById('autoTo').value   || '23:00';
+  const dur  = parseInt(document.getElementById('autoDur').value) || 60;
+  const courtSel = document.getElementById('autoCourt').value || 'both';
 
   const courts = courtSel === 'both' ? ['1','2'] : [courtSel];
-  const workDays = settings.workDays || [0,1,2,3,4,5,6];
-  const holidays = Object.values(settings.holidays || {}).map(h => h.date);
+  const workDays = (settings && settings.workDays) ? settings.workDays : [0,1,2,3,4,5,6];
+  const holidays = settings && settings.holidays ? Object.values(settings.holidays).map(h=>h.date) : [];
 
-  const now = new Date();
-  let added = 0;
   const btn = document.getElementById('autoGenBtn');
   btn.textContent = '⏳ جاري التوليد...';
   btn.disabled = true;
 
+  // Build all slots object to push at once (faster)
+  const toWrite = {};
+  const now = new Date();
+  let added = 0;
+
   for (let i = 0; i < 10; i++) {
-    const d = new Date(now); d.setDate(now.getDate() + i);
+    const d = new Date(now);
+    d.setDate(now.getDate() + i);
     const ds = d.toISOString().split('T')[0];
-    // Skip holidays and non-work days
+
     if (holidays.includes(ds) || !workDays.includes(d.getDay())) continue;
 
     const [fh,fm] = from.split(':').map(Number);
@@ -743,12 +746,17 @@ async function autoGenSlots() {
     const end = th*60+tm;
 
     while (cur + dur <= end) {
-      const hF=Math.floor(cur/60),mF=cur%60,hT=Math.floor((cur+dur)/60),mT=(cur+dur)%60;
-      const fStr=`${hF<10?'0'+hF:hF}:${mF<10?'0'+mF:mF}`;
-      const tStr=`${hT<10?'0'+hT:hT}:${mT<10?'0'+mT:mT}`;
+      const hF=Math.floor(cur/60), mF=cur%60;
+      const hT=Math.floor((cur+dur)/60), mT=(cur+dur)%60;
+      const fStr = (hF<10?'0'+hF:hF)+':'+(mF<10?'0'+mF:mF);
+      const tStr = (hT<10?'0'+hT:hT)+':'+(mT<10?'0'+mT:mT);
+
       for (const court of courts) {
-        if (!Object.values(allSlots).find(s=>s.court===court&&s.date===ds&&s.from===fStr)) {
-          await push(ref(db,'slots'),{court,date:ds,from:fStr,to:tStr});
+        // Check not already exists
+        const exists = Object.values(allSlots).some(s=>s.court===court&&s.date===ds&&s.from===fStr);
+        if (!exists) {
+          const key = 's' + ds.replace(/-/g,'') + court + fStr.replace(':','');
+          toWrite[key] = { court, date:ds, from:fStr, to:tStr };
           added++;
         }
       }
@@ -756,21 +764,52 @@ async function autoGenSlots() {
     }
   }
 
+  if (added === 0) {
+    toast('⚠️ كل الأوقات موجودة بالفعل أو لا توجد أيام عمل', true);
+    btn.textContent = '⚡ توليد الأوقات للـ 10 أيام القادمة';
+    btn.disabled = false;
+    return;
+  }
+
+  // Write all at once using REST API (bypass any SDK issues)
+  try {
+    const res = await fetch(DB_URL + '/slots.json', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(toWrite)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    toast('✅ تم توليد ' + added + ' وقت للـ 10 أيام القادمة');
+  } catch(e) {
+    toast('❌ خطأ في الحفظ: ' + e.message, true);
+  }
+
   btn.textContent = '⚡ توليد الأوقات للـ 10 أيام القادمة';
   btn.disabled = false;
-  toast(`✅ تم توليد ${added} وقت للـ 10 أيام القادمة`);
 }
 
 async function addSlot() {
-  const court=document.getElementById('aC').value, date=document.getElementById('aD').value;
-  const from=document.getElementById('aF').value, to=document.getElementById('aT').value;
+  const DB_URL = 'https://padel-arena-7b02b-default-rtdb.firebaseio.com';
+  const court = document.getElementById('aC').value;
+  const date  = document.getElementById('aD').value;
+  const from  = document.getElementById('aF').value;
+  const to    = document.getElementById('aT').value;
   if (!date||!from||!to) { toast('⚠️ يرجى تعبئة جميع الحقول',true); return; }
   if (from>=to) { toast('⚠️ وقت النهاية يجب أن يكون بعد البداية',true); return; }
-  if (Object.values(allSlots).find(s=>s.court===court&&s.date===date&&s.from===from)) { toast('⚠️ هذا الوقت موجود بالفعل',true); return; }
-  await push(ref(db,'slots'), {court,date,from,to});
-  const [h,m]=to.split(':').map(Number), nh=h+1;
-  if (nh<24) { document.getElementById('aF').value=to; document.getElementById('aT').value=(nh<10?'0'+nh:nh)+':'+(m<10?'0'+m:m); }
-  toast('✅ تم إضافة الوقت بنجاح');
+  if (Object.values(allSlots).some(s=>s.court===court&&s.date===date&&s.from===from)) { toast('⚠️ هذا الوقت موجود بالفعل',true); return; }
+
+  const key = 's'+date.replace(/-/g,'')+court+from.replace(':','');
+  try {
+    const res = await fetch(DB_URL+'/slots/'+key+'.json', {
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({court,date,from,to})
+    });
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const [h,m]=to.split(':').map(Number), nh=h+1;
+    if (nh<24) { document.getElementById('aF').value=to; document.getElementById('aT').value=(nh<10?'0'+nh:nh)+':'+(m<10?'0'+m:m); }
+    toast('✅ تم إضافة الوقت بنجاح');
+  } catch(e) { toast('❌ خطأ: '+e.message,true); }
 }
 
 async function addBulkSlots() {
