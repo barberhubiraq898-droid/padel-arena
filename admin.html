@@ -64,9 +64,9 @@ select.inp option{background:#0b1518}
 /* TABS */
 .tabs{display:flex!important;flex-direction:row!important;border-bottom:1px solid var(--border);margin-bottom:22px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0;flex-wrap:nowrap!important;position:relative;z-index:1}
 .tabs::-webkit-scrollbar{display:none}
-.tab{display:inline-flex!important;flex-direction:row!important;align-items:center!important;padding:10px 14px!important;font-family:'Cairo',sans-serif!important;font-size:13px!important;color:var(--muted);background:transparent!important;border:none!important;border-bottom:2px solid transparent!important;margin-bottom:-1px;cursor:pointer;transition:all 0.2s;white-space:nowrap!important;flex-shrink:0!important;width:auto!important;height:auto!important;gap:5px;line-height:1.2}
+.tab{display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;padding:10px 14px!important;font-family:'Cairo',sans-serif!important;font-size:13px!important;color:var(--muted);background:transparent!important;border:none!important;border-bottom:2px solid transparent!important;border-top:none!important;border-left:none!important;border-right:none!important;border-radius:0!important;margin-bottom:-1px;cursor:pointer;transition:color 0.2s,border-color 0.2s;white-space:nowrap!important;flex-shrink:0!important;width:auto!important;height:auto!important;min-height:unset!important;box-shadow:none!important;outline:none!important;gap:4px;line-height:1.2}
 .tab:hover{color:var(--text)}
-.tab.on{color:var(--teal);border-bottom-color:var(--teal);font-weight:700}
+.tab.on{color:var(--teal)!important;border-bottom:2px solid var(--teal)!important;font-weight:700}
 .panel{display:none}.panel.on{display:block}
 
 /* GRID */
@@ -186,12 +186,13 @@ select.inp option{background:#0b1518}
   .grid2{grid-template-columns:1fr}
   .card.full{grid-column:auto}
   .card{padding:16px 14px}
+  .row2{grid-template-columns:1fr 1fr!important;gap:8px}
   .days-sel{grid-template-columns:repeat(4,1fr)}
   .sch-grid{grid-template-columns:repeat(4,1fr)}
   .row3{grid-template-columns:1fr 1fr}
   .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .tabs::-webkit-scrollbar{display:none}
-  .tab{padding:10px 12px;font-size:11px}
+  .tab{padding:10px 10px;font-size:11px}
   .ftabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
   .ftabs::-webkit-scrollbar{display:none}
   .bitem{flex-direction:column;align-items:flex-start;gap:8px}
