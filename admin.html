@@ -8,7 +8,7 @@
 <style>
 :root{--teal:#00c8c8;--lime:#aaff00;--black:#04080a;--card:#0b1518;--card2:#0e1c20;--border:rgba(0,200,200,0.12);--text:#e0f0f0;--muted:#5a8a8a;--red:#ff4444;--orange:#f59e0b;}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Cairo',sans-serif;background:var(--black);color:var(--text);min-height:100vh}
+body{font-family:'Cairo',sans-serif;background:var(--black);color:var(--text);min-height:100vh;overflow-x:hidden;width:100%}
 .bg{position:fixed;inset:0;z-index:0;pointer-events:none}
 .bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,200,200,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,200,0.025) 1px,transparent 1px);background-size:50px 50px}
 .g1{position:absolute;width:600px;height:600px;background:rgba(0,200,200,0.07);top:-200px;left:-100px;border-radius:50%;filter:blur(120px)}
@@ -174,14 +174,34 @@ select.inp option{background:#0b1518}
 .pwd-hint{font-size:11px;color:var(--orange);background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:8px;padding:9px 12px;margin-bottom:12px}
 
 @media(max-width:768px){
-  .adm-header{padding:10px 14px}
-  .adm-body{padding:16px 14px}
-  .stats{grid-template-columns:repeat(2,1fr)}
+  .adm-header{padding:10px 10px;gap:6px}
+  .adm-header .h-logo span:not(.h-badge){display:none}
+  .h-actions{gap:5px}
+  .hbtn{padding:6px 10px;font-size:11px}
+  .adm-body{padding:12px 10px}
+  .stats{grid-template-columns:repeat(2,1fr);gap:8px}
+  .stat{padding:14px 10px}
+  .sn{font-size:28px}
   .grid2{grid-template-columns:1fr}
   .card.full{grid-column:auto}
+  .card{padding:16px 14px}
   .days-sel{grid-template-columns:repeat(4,1fr)}
   .sch-grid{grid-template-columns:repeat(4,1fr)}
   .row3{grid-template-columns:1fr 1fr}
+  .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{white-space:nowrap;padding:11px 14px;font-size:12px}
+  .ftabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
+  .ftabs::-webkit-scrollbar{display:none}
+  .bitem{flex-direction:column;align-items:flex-start;gap:8px}
+  .bitem>div:last-child{flex-direction:row;align-items:center;width:100%;justify-content:space-between}
+  .litem{flex-wrap:wrap;gap:6px}
+  .li-r{flex-wrap:wrap}
+  .alert-banner{width:calc(100% - 20px);max-width:calc(100% - 20px)}
+}
+@media(max-width:400px){
+  .stats{grid-template-columns:1fr 1fr}
+  .h-badge{display:none}
 }
 </style>
 </head>
@@ -217,8 +237,8 @@ select.inp option{background:#0b1518}
     </div>
     <div class="ltitle">تسجيل الدخول</div>
     <div class="lsub2">أدخل بياناتك للمتابعة</div>
-    <div class="fld"><label>المستخدم</label><input class="inp" id="lu" type="text" placeholder="admin" autocomplete="username"></div>
-    <div class="fld"><label>كلمة المرور</label><input class="inp" id="lp" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+    
+    <div class="fld"><label>رمز الدخول</label><input class="inp" id="lp" type="number" placeholder="أدخل الرمز" autocomplete="current-password" inputmode="numeric" pattern="[0-9]*"></div>
     <button class="btn-login" id="loginBtn">🔐 دخول</button>
     <div class="lerr" id="lerr"></div>
   </div>
@@ -363,11 +383,11 @@ select.inp option{background:#0b1518}
 
           <hr style="border:none;border-top:1px solid var(--border);margin:18px 0">
           <div class="ctitle" style="margin-bottom:12px"><div class="ci">🔑</div> تغيير كلمة المرور</div>
-          <div class="pwd-hint">💡 الافتراضية: <strong>admin123</strong></div>
+          <div class="pwd-hint">💡 الرمز الافتراضي: <strong>1234</strong></div>
           <div style="display:grid;gap:10px">
-            <div><div class="ilabel">الحالية</div><input type="password" class="inp" id="pwdOld" placeholder="••••••••"></div>
-            <div><div class="ilabel">الجديدة</div><input type="password" class="inp" id="pwdNew" placeholder="••••••••"></div>
-            <div><div class="ilabel">تأكيد</div><input type="password" class="inp" id="pwdConf" placeholder="••••••••"></div>
+            <div><div class="ilabel">الرمز الحالي</div><input type="number" class="inp" id="pwdOld" placeholder="الرمز الحالي" inputmode="numeric"></div>
+            <div><div class="ilabel">الرمز الجديد</div><input type="number" class="inp" id="pwdNew" placeholder="رمز جديد" inputmode="numeric"></div>
+            <div><div class="ilabel">تأكيد الرمز</div><input type="number" class="inp" id="pwdConf" placeholder="تأكيد الرمز" inputmode="numeric"></div>
             <button class="btn btn-ghost" id="pwdBtn">🔒 تحديث كلمة المرور</button>
           </div>
         </div>
@@ -466,11 +486,11 @@ select.inp option{background:#0b1518}
         <!-- كلمة المرور الموحدة -->
         <div class="card">
           <div class="ctitle"><div class="ci">🔐</div> كلمة مرور الأدمن (موحدة لكل الأجهزة)</div>
-          <div class="hint hint-teal">كلمة المرور محفوظة في Firebase — تشتغل على كل الأجهزة</div>
+          <div class="hint hint-teal">الرمز محفوظ في Firebase — يتغير على كل الأجهزة فور تعديله</div>
           <div style="display:grid;gap:10px;margin-bottom:14px">
-            <div><div class="ilabel">كلمة المرور الحالية</div><input type="password" class="inp" id="pwdOld" placeholder="••••••••"></div>
-            <div><div class="ilabel">كلمة المرور الجديدة</div><input type="password" class="inp" id="pwdNew" placeholder="••••••••"></div>
-            <div><div class="ilabel">تأكيد كلمة المرور</div><input type="password" class="inp" id="pwdConf" placeholder="••••••••"></div>
+            <div><div class="ilabel">الرمز الحالي</div><input type="number" class="inp" id="pwdOld" placeholder="أدخل الرمز الحالي" inputmode="numeric"></div>
+            <div><div class="ilabel">الرمز الجديد</div><input type="number" class="inp" id="pwdNew" placeholder="رمز جديد (أرقام)" inputmode="numeric"></div>
+            <div><div class="ilabel">تأكيد الرمز</div><input type="number" class="inp" id="pwdConf" placeholder="أعد الرمز الجديد" inputmode="numeric"></div>
           </div>
           <button class="btn btn-ghost" style="max-width:200px" id="pwdBtn">🔐 تغيير كلمة المرور</button>
         </div>
@@ -521,8 +541,8 @@ async function fbPost(path, data) {
 // ══════════════════════════════════
 // AUTH
 // ══════════════════════════════════
-function getPass() { return settings.adminPass || 'admin123'; }
-function getUser() { return settings.adminUser || 'admin'; }
+function getPass() { return String(settings.adminPass || '1234'); }
+
 function isLoggedIn() { return sessionStorage.getItem('auth') === '1'; }
 
 document.getElementById('loginBtn').onclick = doLogin;
@@ -530,17 +550,17 @@ document.getElementById('lp').onkeydown = e => { if(e.key==='Enter') doLogin(); 
 document.getElementById('logoutBtn').onclick = () => { sessionStorage.removeItem('auth'); location.reload(); };
 
 async function doLogin() {
-  const u = document.getElementById('lu').value.trim();
-  const p = document.getElementById('lp').value;
+  
+  const p = String(document.getElementById('lp').value.trim());
   const btn = document.getElementById('loginBtn');
   btn.textContent = '⏳ جاري التحقق...';
   btn.disabled = true;
   // Load settings from Firebase to get latest credentials
   const s = await fbGet('/settings').catch(()=>({}));
   settings = s || {};
-  const validUser = settings.adminUser || 'admin';
-  const validPass = settings.adminPass || 'admin123';
-  if (u === validUser && p === validPass) {
+  
+  const validPass = String(settings.adminPass || '1234');
+  if (p === validPass) {
     sessionStorage.setItem('auth','1');
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
@@ -1010,9 +1030,9 @@ window.clearAllSlots = function() {
 // PASSWORD
 // ══════════════════════════════════
 window.changePwd = async function() {
-  const old=document.getElementById('pwdOld').value, nw=document.getElementById('pwdNew').value.trim(), cf=document.getElementById('pwdConf').value;
-  if (old !== getPass()) { toast('❌ كلمة المرور الحالية غير صحيحة',true); return; }
-  if (nw.length < 4) { toast('⚠️ كلمة المرور قصيرة جداً',true); return; }
+  const old=document.getElementById('pwdOld').value.trim(), nw=document.getElementById('pwdNew').value.trim(), cf=document.getElementById('pwdConf').value.trim();
+  if (String(old) !== getPass()) { toast('❌ كلمة المرور الحالية غير صحيحة',true); return; }
+  if (nw.length < 1) { toast('⚠️ كلمة المرور قصيرة جداً',true); return; }
   if (nw !== cf) { toast('⚠️ كلمتا المرور غير متطابقتين',true); return; }
   // Save to Firebase - works on all devices
   await fbPatch('/settings', { adminPass: nw });
