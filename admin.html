@@ -260,15 +260,50 @@ select.inp option{background:#0b1518}
 
     <!-- TABS -->
     <div class="tabs">
-      <button class="tab on" data-tab="slots">⏰ الأوقات</button>
-      <button class="tab" data-tab="bookings">📋 الحجوزات</button>
+      <button class="tab on" data-tab="bookings">📋 الحجوزات</button>
+      <button class="tab" data-tab="manual">📝 حجز يدوي</button>
+      <button class="tab" data-tab="slots">⏰ الأوقات</button>
       <button class="tab" data-tab="schedule">📅 جدول العمل</button>
       <button class="tab" data-tab="notifs">🔔 الإشعارات</button>
       <button class="tab" data-tab="settings">⚙️ الإعدادات</button>
     </div>
 
+    <!-- ══ MANUAL BOOKING TAB ══ -->
+    <div class="panel" id="panel-manual">
+      <div class="grid2">
+        <div class="card">
+          <div class="ctitle"><div class="ci">📝</div> حجز يدوي جديد</div>
+          <div class="hint hint-teal">احجز وقتاً مباشرة بدون موافقة الزبون</div>
+          <div style="display:grid;gap:11px">
+            <div class="row2">
+              <div><div class="ilabel">الملعب</div>
+                <select class="inp" id="mCourt">
+                  <option value="1">🔵 الملعب الأول – بادل</option>
+                  <option value="2">🟢 الملعب الثاني – بادل</option>
+                  <option value="3">🟠 ملعب Padbol</option>
+                </select>
+              </div>
+              <div><div class="ilabel">التاريخ</div><input type="date" class="inp" id="mDate"></div>
+            </div>
+            <div class="row2">
+              <div><div class="ilabel">من</div><input type="time" class="inp" id="mFrom"></div>
+              <div><div class="ilabel">إلى</div><input type="time" class="inp" id="mTo"></div>
+            </div>
+            <div><div class="ilabel">اسم الزبون</div><input type="text" class="inp" id="mName" placeholder="الاسم الكامل"></div>
+            <div><div class="ilabel">رقم الجوال</div><input type="tel" class="inp" id="mPhone" placeholder="07xxxxxxxxx" dir="ltr"></div>
+            <div><div class="ilabel">السعر (د.ع)</div><input type="number" class="inp" id="mPrice" placeholder="40000"></div>
+            <button class="btn btn-teal" id="manualBookBtn">📝 تأكيد الحجز اليدوي</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ctitle"><div class="ci">📋</div> الحجوزات اليدوية الأخيرة</div>
+          <div id="manualBookList"><div class="empty">لا توجد حجوزات يدوية</div></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ══ SLOTS TAB ══ -->
-    <div class="panel on" id="panel-slots">
+    <div class="panel" id="panel-slots">
       <div class="grid2">
         <!-- AUTO GENERATE -->
         <div class="card">
@@ -355,7 +390,7 @@ select.inp option{background:#0b1518}
     </div>
 
     <!-- ══ BOOKINGS TAB ══ -->
-    <div class="panel" id="panel-bookings">
+    <div class="panel on" id="panel-bookings">
       <div class="card full">
         <div class="ctitle"><div class="ci">📋</div> الحجوزات <span style="font-size:11px;color:var(--muted);font-weight:400;margin-right:8px" id="booksCount"></span></div>
         <div class="ftabs">
@@ -371,33 +406,9 @@ select.inp option{background:#0b1518}
 
     <!-- ══ SCHEDULE TAB ══ -->
     <div class="panel" id="panel-schedule">
-      <div class="grid2">
-        <div class="card">
-          <div class="ctitle"><div class="ci">🕐</div> أوقات العمل</div>
-          <div class="hint">هذه الأوقات تظهر لموقع الزبائن وتؤثر على التوليد التلقائي</div>
-          <div class="row2" style="margin-bottom:12px">
-            <div><div class="ilabel">وقت الفتح</div><input type="time" class="inp" id="sOpen" value="08:00"></div>
-            <div><div class="ilabel">وقت الإغلاق</div><input type="time" class="inp" id="sClose" value="23:00"></div>
-          </div>
-          <div class="ilabel" style="margin-bottom:6px">أيام العمل (اضغط لتفعيل/إيقاف)</div>
-          <div class="days-sel" id="daysSel"></div>
-          <button class="btn btn-teal" id="saveHoursBtn">💾 حفظ أوقات العمل</button>
-        </div>
-
-        <div class="card">
-          <div class="ctitle"><div class="ci">🔴</div> إجازات وأيام مغلقة</div>
-          <div style="display:grid;gap:10px;margin-bottom:14px">
-            <div><div class="ilabel">التاريخ</div><input type="date" class="inp" id="hDate"></div>
-            <div><div class="ilabel">اسم الإجازة</div><input type="text" class="inp" id="hName" placeholder="مثال: العيد الوطني"></div>
-            <button class="btn btn-ghost" id="addHolidayBtn">🔴 إضافة يوم إجازة</button>
-          </div>
-          <div class="hlist" id="holidayList"></div>
-        </div>
-
-        <div class="card full">
-          <div class="ctitle"><div class="ci">📊</div> نظرة عامة – الأسبوع القادم</div>
-          <div class="sch-grid" id="schPreview"></div>
-        </div>
+      <div class="card full">
+        <div class="ctitle"><div class="ci">📊</div> نظرة عامة – الأسبوع القادم</div>
+        <div class="sch-grid" id="schPreview"></div>
       </div>
     </div>
 
@@ -415,13 +426,55 @@ select.inp option{background:#0b1518}
 
     <!-- ══ SETTINGS TAB ══ -->
     <div class="panel" id="panel-settings">
-      <div class="card full">
-        <div class="ctitle"><div class="ci">⚙️</div> إعدادات عامة</div>
-        <div class="row2" style="margin-bottom:14px">
-          <div><div class="ilabel">اسم المكان</div><input type="text" class="inp" id="vName" placeholder="Padel Pro"></div>
-          <div><div class="ilabel">السعر (اختياري)</div><input type="text" class="inp" id="vPrice" placeholder="50 ريال/ساعة"></div>
+      <div class="grid2">
+
+        <!-- أوقات العمل -->
+        <div class="card">
+          <div class="ctitle"><div class="ci">🕐</div> أوقات العمل</div>
+          <div class="hint">هذه الأوقات تؤثر على التوليد التلقائي وموقع الزبائن</div>
+          <div class="row2" style="margin-bottom:12px">
+            <div><div class="ilabel">وقت الفتح</div><input type="time" class="inp" id="sOpen" value="08:00"></div>
+            <div><div class="ilabel">وقت الإغلاق</div><input type="time" class="inp" id="sClose" value="23:00"></div>
+          </div>
+          <div class="ilabel" style="margin-bottom:6px">أيام العمل</div>
+          <div class="days-sel" id="daysSel"></div>
+          <button class="btn btn-teal" id="saveHoursBtn">💾 حفظ أوقات العمل</button>
         </div>
-        <button class="btn btn-ghost" style="max-width:200px" id="saveVenueBtn">💾 حفظ</button>
+
+        <!-- إجازات -->
+        <div class="card">
+          <div class="ctitle"><div class="ci">🔴</div> إجازات وأيام مغلقة</div>
+          <div style="display:grid;gap:10px;margin-bottom:14px">
+            <div><div class="ilabel">التاريخ</div><input type="date" class="inp" id="hDate"></div>
+            <div><div class="ilabel">اسم الإجازة</div><input type="text" class="inp" id="hName" placeholder="مثال: العيد الوطني"></div>
+            <button class="btn btn-ghost" id="addHolidayBtn">🔴 إضافة يوم إجازة</button>
+          </div>
+          <div class="hlist" id="holidayList"></div>
+        </div>
+
+        <!-- إعدادات عامة -->
+        <div class="card">
+          <div class="ctitle"><div class="ci">⚙️</div> إعدادات عامة</div>
+          <div style="display:grid;gap:12px;margin-bottom:14px">
+            <div><div class="ilabel">اسم المكان</div><input type="text" class="inp" id="vName" placeholder="Padel Pro"></div>
+            <div><div class="ilabel">رقم واتساب الحجز</div><input type="tel" class="inp" id="vWaNumber" placeholder="9647xxxxxxxxx" dir="ltr"></div>
+            <div><div class="ilabel">السعر (اختياري)</div><input type="text" class="inp" id="vPrice" placeholder="50 ريال/ساعة"></div>
+          </div>
+          <button class="btn btn-ghost" style="max-width:200px" id="saveVenueBtn">💾 حفظ الإعدادات</button>
+        </div>
+
+        <!-- كلمة المرور الموحدة -->
+        <div class="card">
+          <div class="ctitle"><div class="ci">🔐</div> كلمة مرور الأدمن (موحدة لكل الأجهزة)</div>
+          <div class="hint hint-teal">كلمة المرور محفوظة في Firebase — تشتغل على كل الأجهزة</div>
+          <div style="display:grid;gap:10px;margin-bottom:14px">
+            <div><div class="ilabel">كلمة المرور الحالية</div><input type="password" class="inp" id="pwdOld" placeholder="••••••••"></div>
+            <div><div class="ilabel">كلمة المرور الجديدة</div><input type="password" class="inp" id="pwdNew" placeholder="••••••••"></div>
+            <div><div class="ilabel">تأكيد كلمة المرور</div><input type="password" class="inp" id="pwdConf" placeholder="••••••••"></div>
+          </div>
+          <button class="btn btn-ghost" style="max-width:200px" id="pwdBtn">🔐 تغيير كلمة المرور</button>
+        </div>
+
       </div>
     </div>
 
@@ -461,22 +514,33 @@ async function fbPatch(path, data) {
 async function fbDelete(path) {
   await fetch(DB + path + '.json', { method:'DELETE' });
 }
+async function fbPost(path, data) {
+  await fetch(DB + path + '.json', { method:'POST', body: JSON.stringify(data) });
+}
 
 // ══════════════════════════════════
 // AUTH
 // ══════════════════════════════════
-function getPass() { return localStorage.getItem('adminPass') || 'admin123'; }
-function getUser() { return localStorage.getItem('adminUser') || 'admin'; }
+function getPass() { return settings.adminPass || 'admin123'; }
+function getUser() { return settings.adminUser || 'admin'; }
 function isLoggedIn() { return sessionStorage.getItem('auth') === '1'; }
 
 document.getElementById('loginBtn').onclick = doLogin;
 document.getElementById('lp').onkeydown = e => { if(e.key==='Enter') doLogin(); };
 document.getElementById('logoutBtn').onclick = () => { sessionStorage.removeItem('auth'); location.reload(); };
 
-function doLogin() {
+async function doLogin() {
   const u = document.getElementById('lu').value.trim();
   const p = document.getElementById('lp').value;
-  if (u === getUser() && p === getPass()) {
+  const btn = document.getElementById('loginBtn');
+  btn.textContent = '⏳ جاري التحقق...';
+  btn.disabled = true;
+  // Load settings from Firebase to get latest credentials
+  const s = await fbGet('/settings').catch(()=>({}));
+  settings = s || {};
+  const validUser = settings.adminUser || 'admin';
+  const validPass = settings.adminPass || 'admin123';
+  if (u === validUser && p === validPass) {
     sessionStorage.setItem('auth','1');
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
@@ -485,6 +549,8 @@ function doLogin() {
     const el = document.getElementById('lerr');
     el.textContent = '❌ بيانات الدخول غير صحيحة';
     setTimeout(() => el.textContent='', 3000);
+    btn.textContent = '🔐 دخول';
+    btn.disabled = false;
   }
 }
 
@@ -503,6 +569,7 @@ let lastNotifCount = 0;
 async function init() {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('aD').value = today;
+  document.getElementById('mDate').value = today;
   document.getElementById('aF').value = '08:00';
   document.getElementById('aT').value = '09:00';
   document.getElementById('hDate').value = today;
@@ -541,6 +608,7 @@ function renderAll() {
   renderStats();
   renderSlots();
   renderBookings();
+  renderManualBookings();
   updateNotifBadge();
 }
 
@@ -623,15 +691,25 @@ function renderBookings() {
   if (!entries.length) { el.innerHTML='<div class="empty">📋 لا توجد حجوزات في هذا الفلتر</div>'; return; }
 
   el.innerHTML = entries.map(([key,b]) => {
-    const cn = b.court==='1'?'🔵 الملعب الأول':'🟢 الملعب الثاني';
+    const cn = b.court==='1'?'🔵 ملعب 1':b.court==='2'?'🟢 ملعب 2':'🟠 Padbol';
+    const nowMins = new Date().getHours()*60+new Date().getMinutes();
+    const today2 = new Date().toISOString().split('T')[0];
+    const slotMins = timeToMins(b.from);
+    const delayed = !b.arrivedAt && b.date===today2 && nowMins > slotMins;
+    const delayMins = delayed ? nowMins - slotMins : 0;
+    const arrivalInfo = b.arrivedAt
+      ? `<span style="color:#4ade80;font-size:11px">✅ وصل ${timeAgo(b.arrivedAt)}</span>`
+      : `<button class="bsm" style="background:rgba(74,222,128,0.15);color:#4ade80;border:1px solid rgba(74,222,128,0.3)" onclick="markArrival('${key}')">🏃 وصل اللاعب</button>`;
+    const delayInfo = delayed ? `<span style="color:#f97316;font-size:11px;margin-right:6px">⏰ تأخر ${delayMins} دقيقة</span>` : '';
     return `<div class="bitem">
-      <div>
-        <div class="bname">${b.name}</div>
+      <div style="flex:1">
+        <div class="bname">${b.name}${b.manual?'<span style="font-size:10px;background:rgba(0,200,200,0.2);color:var(--teal);padding:2px 6px;border-radius:4px;margin-right:6px">يدوي</span>':''}</div>
         <div class="bmeta">${cn} · ${fmt(b.date)} · ${b.from} – ${b.to}</div>
+        <div style="margin-top:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">${arrivalInfo}${delayInfo}</div>
       </div>
-      <div style="text-align:left">
+      <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end">
         <div class="bphone" dir="ltr">${b.phone}</div>
-        <button class="bsm bsm-r" onclick="cancelBook('${key}')">إلغاء الحجز</button>
+        <button class="bsm bsm-r" onclick="cancelBook('${key}')">إلغاء</button>
       </div>
     </div>`;
   }).join('');
@@ -767,6 +845,7 @@ function loadSettingsUI() {
   selWorkDays = settings.workDays || [0,1,2,3,4,5,6];
   if (settings.venueName) document.getElementById('vName').value = settings.venueName;
   if (settings.venuePrice) document.getElementById('vPrice').value = settings.venuePrice;
+  if (settings.waNumber) document.getElementById('vWaNumber').value = settings.waNumber;
   buildDaysSel();
 }
 
@@ -930,22 +1009,104 @@ window.clearAllSlots = function() {
 // ══════════════════════════════════
 // PASSWORD
 // ══════════════════════════════════
-window.changePwd = function() {
+window.changePwd = async function() {
   const old=document.getElementById('pwdOld').value, nw=document.getElementById('pwdNew').value.trim(), cf=document.getElementById('pwdConf').value;
   if (old !== getPass()) { toast('❌ كلمة المرور الحالية غير صحيحة',true); return; }
   if (nw.length < 4) { toast('⚠️ كلمة المرور قصيرة جداً',true); return; }
   if (nw !== cf) { toast('⚠️ كلمتا المرور غير متطابقتين',true); return; }
-  localStorage.setItem('adminPass', nw);
+  // Save to Firebase - works on all devices
+  await fbPatch('/settings', { adminPass: nw });
+  settings.adminPass = nw;
   ['pwdOld','pwdNew','pwdConf'].forEach(id=>document.getElementById(id).value='');
-  toast('✅ تم تغيير كلمة المرور');
+  toast('✅ تم تغيير كلمة المرور — محفوظة لكل الأجهزة');
 };
 
 window.saveVenueSettings = async function() {
-  const s = { ...settings, venueName: document.getElementById('vName').value.trim(), venuePrice: document.getElementById('vPrice').value.trim() };
+  const waNum = document.getElementById('vWaNumber').value.trim().replace(/[^0-9]/g,'');
+  const s = { ...settings,
+    venueName: document.getElementById('vName').value.trim(),
+    venuePrice: document.getElementById('vPrice').value.trim(),
+    waNumber: waNum
+  };
   await fbSet('/settings', s);
   settings = s;
   toast('✅ تم حفظ الإعدادات');
 };
+
+// ══ ARRIVAL TRACKING ══
+window.markArrival = async function(key) {
+  await fbPatch('/bookings/'+key, { arrivedAt: Date.now() });
+  if (bookings[key]) bookings[key].arrivedAt = Date.now();
+  renderBookings();
+  toast('✅ تم تسجيل وصول اللاعب');
+};
+
+// ══ MANUAL BOOKING ══
+window.doManualBook = async function() {
+  const court = document.getElementById('mCourt').value;
+  const date  = document.getElementById('mDate').value;
+  const from  = document.getElementById('mFrom').value;
+  const to    = document.getElementById('mTo').value;
+  const name  = document.getElementById('mName').value.trim();
+  const phone = document.getElementById('mPhone').value.trim();
+  const price = parseInt(document.getElementById('mPrice').value) || 0;
+
+  if (!date||!from||!to||!name||!phone) { toast('⚠️ أكمل جميع الحقول',true); return; }
+  if (from >= to) { toast('⚠️ وقت النهاية يجب أن يكون بعد البداية',true); return; }
+
+  // Create or find slot
+  const slotKey = 'slot_'+date.replace(/-/g,'')+'_c'+court+'_'+from.replace(':','');
+  if (!slots[slotKey]) {
+    await fbSet('/slots/'+slotKey, {court, date, from, to});
+    slots[slotKey] = {court, date, from, to};
+  }
+
+  // Check not already booked
+  const alreadyBooked = Object.values(bookings).some(b=>b.slotId===slotKey);
+  if (alreadyBooked) { toast('⚠️ هذا الوقت محجوز بالفعل',true); return; }
+
+  const bookingData = {
+    slotId: slotKey, court, date, from, to,
+    name, phone, price, manual: true, ts: Date.now()
+  };
+  const newKey = 'bk_manual_'+Date.now();
+  await fbSet('/bookings/'+newKey, bookingData);
+  bookings[newKey] = bookingData;
+
+  // Notify
+  await fbPost('/notifications', {
+    title: `📝 حجز يدوي – ${name}`,
+    msg: `${court==='1'?'ملعب 1':court==='2'?'ملعب 2':'Padbol'} · ${fmt(date)} · ${from} – ${to} · ${price.toLocaleString()} د.ع`,
+    ts: Date.now(), read: false
+  });
+
+  renderAll();
+  renderManualBookings();
+  ['mName','mPhone','mPrice'].forEach(id=>document.getElementById(id).value='');
+  toast('✅ تم الحجز اليدوي بنجاح');
+};
+
+function renderManualBookings() {
+  const el = document.getElementById('manualBookList');
+  if (!el) return;
+  const manual = Object.entries(bookings)
+    .filter(([k,b])=>b.manual)
+    .sort((a,b)=>b[1].ts-a[1].ts)
+    .slice(0,10);
+  if (!manual.length) { el.innerHTML='<div class="empty">لا توجد حجوزات يدوية</div>'; return; }
+  el.innerHTML = manual.map(([key,b])=>`
+    <div class="litem">
+      <div class="li-l">
+        <div class="li-court">${b.court==='1'?'🔵 ملعب 1':b.court==='2'?'🟢 ملعب 2':'🟠 Padbol'} · ${fmt(b.date)}</div>
+        <div class="li-time">${b.from} – ${b.to}</div>
+        <div class="li-name">👤 ${b.name} · ${b.phone}</div>
+      </div>
+      <div class="li-r">
+        <span class="badge-bk">يدوي</span>
+        <button class="bsm bsm-r" onclick="cancelBook('${key}')">إلغاء</button>
+      </div>
+    </div>`).join('');
+}
 
 // ══════════════════════════════════
 // UI SETUP
@@ -995,6 +1156,7 @@ function setupUI() {
   document.getElementById('addHolidayBtn').onclick = window.addHoliday;
   document.getElementById('saveVenueBtn').onclick = window.saveVenueSettings;
   document.getElementById('markAllBtn').onclick = window.markAllRead;
+  document.getElementById('manualBookBtn').onclick = window.doManualBook;
   document.getElementById('deleteAllNotifsBtn').onclick = async function() {
     const keys = Object.keys(notifs);
     if (!keys.length) { toast('لا توجد إشعارات'); return; }
@@ -1013,6 +1175,7 @@ function setupUI() {
 // HELPERS
 // ══════════════════════════════════
 function pad(n) { return n < 10 ? '0'+n : ''+n; }
+function timeToMins(t) { const [h,m]=t.split(':').map(Number); return h*60+m; }
 function fmt(d) { if(!d)return''; return new Date(d+'T00:00:00').toLocaleDateString('ar-SA',{weekday:'short',day:'numeric',month:'short'}); }
 function timeAgo(ts) {
   const s=(Date.now()-ts)/1000;
