@@ -63,7 +63,8 @@ select.inp option{background:#0b1518}
 
 /* TABS */
 .tabs{display:flex!important;flex-direction:row!important;border-bottom:1px solid var(--border);margin-bottom:22px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0;flex-wrap:nowrap!important;position:relative;z-index:1}
-.tab{display:inline-flex!important;flex-direction:row!important;align-items:center!important;padding:10px 12px!important;font-family:'Cairo',sans-serif!important;font-size:12px!important;color:var(--muted);background:transparent!important;border:none!important;border-bottom:2px solid transparent!important;margin-bottom:-1px;cursor:pointer;transition:all 0.2s;white-space:nowrap!important;flex-shrink:0!important;width:auto!important;height:auto!important}
+.tabs::-webkit-scrollbar{display:none}
+.tab{display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;padding:10px 12px!important;font-family:'Cairo',sans-serif!important;font-size:12px!important;color:var(--muted);background:transparent!important;border:none!important;border-bottom:2px solid transparent!important;margin-bottom:-1px;cursor:pointer;transition:all 0.2s;white-space:nowrap!important;flex-shrink:1!important;width:auto!important;height:auto!important;flex:1 1 auto!important}
 .tab:hover{color:var(--text)}
 .tab.on{color:var(--teal);border-bottom-color:var(--teal);font-weight:700}
 .panel{display:none}.panel.on{display:block}
@@ -200,6 +201,9 @@ select.inp option{background:#0b1518}
   .li-r{flex-wrap:wrap}
   .alert-banner{width:calc(100% - 20px);max-width:calc(100% - 20px)}
 }
+@media(max-width:480px){
+  .tab{padding:9px 6px!important;font-size:10px!important}
+}
 @media(max-width:400px){
   .stats{grid-template-columns:1fr 1fr}
   .h-badge{display:none}
@@ -281,12 +285,12 @@ select.inp option{background:#0b1518}
 
     <!-- TABS -->
     <div class="tabs">
-      <button class="tab on" data-tab="bookings">📋 الحجوزات</button>
-      <button class="tab" data-tab="manual">📝 حجز يدوي</button>
-      <button class="tab" data-tab="slots">⏰ الأوقات</button>
-      <button class="tab" data-tab="schedule">📅 جدول العمل</button>
-      <button class="tab" data-tab="notifs">🔔 الإشعارات</button>
-      <button class="tab" data-tab="settings">⚙️ الإعدادات</button>
+      <button class="tab on" data-tab="bookings">الحجوزات</button>
+      <button class="tab" data-tab="manual">حجز يدوي</button>
+      <button class="tab" data-tab="slots">الأوقات</button>
+      <button class="tab" data-tab="schedule">جدول العمل</button>
+      <button class="tab" data-tab="notifs">الإشعارات</button>
+      <button class="tab" data-tab="settings">الإعدادات</button>
     </div>
 
     <!-- ══ MANUAL BOOKING TAB ══ -->
@@ -296,7 +300,7 @@ select.inp option{background:#0b1518}
           <div class="ctitle"><div class="ci">📝</div> حجز يدوي جديد</div>
           <div class="hint hint-teal">احجز وقتاً مباشرة بدون موافقة الزبون</div>
           <div style="display:grid;gap:11px">
-            <div class="row2">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
               <div><div class="ilabel">الملعب</div>
                 <select class="inp" id="mCourt">
                   <option value="1">🔵 الملعب الأول – بادل</option>
@@ -306,7 +310,7 @@ select.inp option{background:#0b1518}
               </div>
               <div><div class="ilabel">التاريخ</div><input type="date" class="inp" id="mDate"></div>
             </div>
-            <div class="row2">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
               <div><div class="ilabel">من</div><input type="time" class="inp" id="mFrom"></div>
               <div><div class="ilabel">إلى</div><input type="time" class="inp" id="mTo"></div>
             </div>
@@ -331,7 +335,7 @@ select.inp option{background:#0b1518}
           <div class="ctitle"><div class="ci">⚡</div> توليد أوقات شهر كامل تلقائياً</div>
           <div class="hint hint-teal">اضبط الإعدادات وضغط الزر — يتولد كل شيء تلقائياً مع تجاهل الإجازات وأيام الإغلاق</div>
           <div style="display:grid;gap:11px">
-            <div class="row2">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
               <div><div class="ilabel">وقت الفتح</div><input type="time" class="inp" id="autoFrom" value="08:00"></div>
               <div><div class="ilabel">وقت الإغلاق</div><input type="time" class="inp" id="autoTo" value="23:00"></div>
             </div>
@@ -369,13 +373,13 @@ select.inp option{background:#0b1518}
         <div class="card">
           <div class="ctitle"><div class="ci">➕</div> إضافة وقت محدد</div>
           <div style="display:grid;gap:11px">
-            <div class="row2">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
               <div><div class="ilabel">الملعب</div>
                 <select class="inp" id="aC"><option value="1">🔵 الملعب الأول</option><option value="2">🟢 الملعب الثاني</option><option value="3">🟠 Padbol</option></select>
               </div>
               <div><div class="ilabel">التاريخ</div><input type="date" class="inp" id="aD"></div>
             </div>
-            <div class="row2">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
               <div><div class="ilabel">من</div><input type="time" class="inp" id="aF"></div>
               <div><div class="ilabel">إلى</div><input type="time" class="inp" id="aT"></div>
             </div>
@@ -453,7 +457,7 @@ select.inp option{background:#0b1518}
         <div class="card">
           <div class="ctitle"><div class="ci">🕐</div> أوقات العمل</div>
           <div class="hint">هذه الأوقات تؤثر على التوليد التلقائي وموقع الزبائن</div>
-          <div class="row2" style="margin-bottom:12px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
             <div><div class="ilabel">وقت الفتح</div><input type="time" class="inp" id="sOpen" value="08:00"></div>
             <div><div class="ilabel">وقت الإغلاق</div><input type="time" class="inp" id="sClose" value="23:00"></div>
           </div>
