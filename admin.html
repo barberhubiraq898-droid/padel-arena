@@ -62,11 +62,10 @@ select.inp option{background:#0b1518}
 .sl{font-size:11px;color:var(--muted);margin-top:5px}
 
 /* TABS */
-.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:22px;align-items:stretch}
-.tab{padding:11px 18px;font-family:'Cairo',sans-serif;font-size:13px;color:var(--muted);background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;line-height:1}
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:22px}
+.tab{padding:11px 16px;font-family:'Cairo',sans-serif;font-size:13px;color:var(--muted);background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;line-height:1.2}
 .tab:hover{color:var(--text)}
 .tab.on{color:var(--teal);border-bottom-color:var(--teal);font-weight:700}
-.tico{font-size:15px;line-height:1;display:inline-block;vertical-align:middle}
 .panel{display:none}.panel.on{display:block}
 
 /* GRID */
@@ -191,7 +190,7 @@ select.inp option{background:#0b1518}
   .row3{grid-template-columns:1fr 1fr}
   .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .tabs::-webkit-scrollbar{display:none}
-  .tab{padding:9px 12px;font-size:12px}
+  .tab{padding:10px 12px;font-size:11px}
   .ftabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
   .ftabs::-webkit-scrollbar{display:none}
   .bitem{flex-direction:column;align-items:flex-start;gap:8px}
@@ -281,12 +280,12 @@ select.inp option{background:#0b1518}
 
     <!-- TABS -->
     <div class="tabs">
-      <button class="tab on" data-tab="bookings"><span class="tico">📋</span><span>الحجوزات</span></button>
-      <button class="tab" data-tab="manual"><span class="tico">📝</span><span>حجز يدوي</span></button>
-      <button class="tab" data-tab="slots"><span class="tico">⏰</span><span>الأوقات</span></button>
-      <button class="tab" data-tab="schedule"><span class="tico">📅</span><span>جدول العمل</span></button>
-      <button class="tab" data-tab="notifs"><span class="tico">🔔</span><span>الإشعارات</span></button>
-      <button class="tab" data-tab="settings"><span class="tico">⚙️</span><span>الإعدادات</span></button>
+      <button class="tab on" data-tab="bookings">📋 الحجوزات</button>
+      <button class="tab" data-tab="manual">📝 حجز يدوي</button>
+      <button class="tab" data-tab="slots">⏰ الأوقات</button>
+      <button class="tab" data-tab="schedule">📅 جدول العمل</button>
+      <button class="tab" data-tab="notifs">🔔 الإشعارات</button>
+      <button class="tab" data-tab="settings">⚙️ الإعدادات</button>
     </div>
 
     <!-- ══ MANUAL BOOKING TAB ══ -->
