@@ -467,8 +467,11 @@ async function loadData() {
 
 // Poll every 20s
 setInterval(async () => {
-  slots = await fbGet('/slots').then(d=>d||{});
-  bookings = await fbGet('/bookings').then(d=>d||{});
+  [slots, bookings, settings] = await Promise.all([
+    fbGet('/slots').then(d=>d||{}),
+    fbGet('/bookings').then(d=>d||{}),
+    fbGet('/settings').then(d=>d||{})
+  ]);
   renderAllCourts();
 }, 20000);
 
@@ -505,10 +508,15 @@ function buildDates() {
     btn.className = 'day-btn'+(ds===selDate?' active':'')+(closed?' holiday':'');
     btn.innerHTML = (closed?'<div class="hbadge"></div>':'')+
       `<div class="dn">${i===0?'اليوم':names[d.getDay()]}</div><div class="dd">${d.getDate()}</div>`;
-    btn.onclick = () => {
-      document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active'); selDate=ds; renderAllCourts();
-    };
+    if (!closed) {
+      btn.onclick = () => {
+        document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active'); selDate=ds; renderAllCourts();
+      };
+    } else {
+      btn.style.cursor = 'not-allowed';
+      btn.style.opacity = '0.5';
+    }
     el.appendChild(btn);
   }
 }
@@ -538,8 +546,15 @@ function renderCourt(court) {
   // فترة 2: 09:00 → 23:00 (بقية اليوم)
   // الفترة 03:00-08:59 مغلقة ولا تُعرض
 
+  const nowDate = new Date().toISOString().split('T')[0];
+  const nowMins = new Date().getHours()*60 + new Date().getMinutes();
   const allDaySlots = Object.entries(slots)
-    .filter(([k,s]) => s.court === court && s.date === selDate);
+    .filter(([k,s]) => {
+      if (s.court !== court || s.date !== selDate) return false;
+      // Hide past slots for today
+      if (selDate === nowDate && timeToMins(s.from) <= nowMins) return false;
+      return true;
+    });
 
   // فجر (00:00 → 02:59)
   const fajrSlots = allDaySlots
@@ -686,15 +701,14 @@ async function doBook(withWa) {
 
   // ntfy push notification
   try {
-    await fetch('https://ntfy.sh/padelpro_bookings_x9k2', {
+    const ntfyTitle = encodeURIComponent('🎾 حجز جديد - ' + name);
+    const ntfyTags = 'tada,tennis';
+    const ntfyPriority = 'high';
+    const ntfyMsg = `${cName}\n📅 ${fmt(pending.date)}\n⏰ ${to12(pending.from)} - ${to12(endTime)}\n👤 ${name} | ${phone}\n💰 ${pending.price.toLocaleString()} د.ع`;
+    await fetch(`https://ntfy.sh/padelpro_bookings_x9k2?title=${ntfyTitle}&priority=${ntfyPriority}&tags=${ntfyTags}`, {
       method: 'POST',
-      headers: {
-        'Title': `🎾 حجز جديد من ${name}`,
-        'Priority': 'high',
-        'Tags': 'tada,tennis',
-        'Content-Type': 'text/plain; charset=utf-8'
-      },
-      body: `${cName}\n📅 ${fmt(pending.date)}\n⏰ ${to12(pending.from)} – ${to12(endTime)}\n👤 ${name} · ${phone}\n💰 ${pending.price.toLocaleString()} د.ع`
+      mode: 'no-cors',
+      body: ntfyMsg
     });
   } catch(e) {}
 

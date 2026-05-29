@@ -140,7 +140,7 @@ select.inp option{background:#0b1518}
 
 /* NOTIFS */
 .nlist{display:flex;flex-direction:column;gap:8px}
-.nitem{padding:13px 15px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.02);display:flex;gap:12px;cursor:pointer;transition:all 0.2s}
+.nitem{display:flex;align-items:center;gap:8px;padding:13px 15px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.02);display:flex;gap:12px;cursor:pointer;transition:all 0.2s}
 .nitem.unread{border-color:rgba(0,200,200,0.2);background:rgba(0,200,200,0.04)}
 .nitem:hover{border-color:rgba(0,200,200,0.25)}
 .ndot{width:7px;height:7px;background:var(--teal);border-radius:50%;flex-shrink:0;margin-top:5px}
@@ -407,6 +407,7 @@ select.inp option{background:#0b1518}
         <div class="ctitle" style="justify-content:space-between">
           <div style="display:flex;align-items:center;gap:8px"><div class="ci">🔔</div> الإشعارات</div>
           <button class="bsm bsm-g" id="markAllBtn">✓ تعيين الكل كمقروء</button>
+          <button class="bsm bsm-r" id="deleteAllNotifsBtn" style="margin-right:6px">🗑️ حذف الكل</button>
         </div>
         <div class="nlist" id="notifList"></div>
       </div>
@@ -865,15 +866,24 @@ function renderNotifs() {
   const list = Object.entries(notifs).sort((a,b)=>b[1].ts-a[1].ts);
   if (!list.length) { el.innerHTML='<div class="empty">🔔 لا توجد إشعارات</div>'; return; }
   el.innerHTML = list.map(([key,n])=>`
-    <div class="nitem ${n.read?'':'unread'}" onclick="readNotif('${key}')">
-      <div class="ndot ${n.read?'read':''}"></div>
-      <div>
+    <div class="nitem ${n.read?'':'unread'}">
+      <div class="ndot ${n.read?'read':''}" onclick="readNotif('${key}')"></div>
+      <div style="flex:1" onclick="readNotif('${key}')">
         <div class="ntitle">${n.title}</div>
         <div class="nmsg">${n.msg}</div>
         <div class="ntime">${timeAgo(n.ts)}</div>
       </div>
+      <button onclick="deleteNotif('${key}')" style="background:none;border:none;color:#ff4444;cursor:pointer;font-size:16px;padding:4px 8px;border-radius:6px;flex-shrink:0" title="حذف">🗑️</button>
     </div>`).join('');
 }
+
+window.deleteNotif = async function(key) {
+  await fetch(`${DB}/notifications/${key}.json`, {method:'DELETE'});
+  delete notifs[key];
+  updateNotifBadge();
+  renderNotifs();
+  toast('🗑️ تم حذف الإشعار');
+};
 
 window.readNotif = async function(key) {
   await fbPatch('/notifications/'+key, {read:true});
@@ -985,6 +995,17 @@ function setupUI() {
   document.getElementById('addHolidayBtn').onclick = window.addHoliday;
   document.getElementById('saveVenueBtn').onclick = window.saveVenueSettings;
   document.getElementById('markAllBtn').onclick = window.markAllRead;
+  document.getElementById('deleteAllNotifsBtn').onclick = async function() {
+    const keys = Object.keys(notifs);
+    if (!keys.length) { toast('لا توجد إشعارات'); return; }
+    for (const k of keys) {
+      await fetch(`${DB}/notifications/${k}.json`, {method:'DELETE'});
+    }
+    notifs = {};
+    updateNotifBadge();
+    renderNotifs();
+    toast('🗑️ تم حذف جميع الإشعارات');
+  };
   document.getElementById('confirmNo').onclick = ()=>document.getElementById('confirmOverlay').classList.add('off');
 }
 
