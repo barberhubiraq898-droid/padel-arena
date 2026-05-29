@@ -95,6 +95,7 @@ header{position:sticky;top:0;z-index:100;padding:10px 28px;display:flex;align-it
 .slot:hover{border-color:var(--teal);color:var(--teal);transform:scale(1.04)}
 .slot .st{font-size:11px;font-weight:700;display:block}
 .slot .se{font-size:9px;color:var(--muted);display:block;margin-top:1px}
+.s-booked-lbl{display:block;font-size:10px;color:#ff6b6b;font-weight:700;margin-top:3px;letter-spacing:0.5px}
 .slot.booked{border-color:rgba(255,68,68,0.15);background:rgba(255,68,68,0.04);cursor:not-allowed;opacity:0.45}
 .no-slots{text-align:center;padding:24px;color:var(--muted);font-size:12px;grid-column:1/-1}
 .loading{text-align:center;padding:24px;color:var(--muted);grid-column:1/-1}
@@ -170,7 +171,7 @@ header{position:sticky;top:0;z-index:100;padding:10px 28px;display:flex;align-it
 <div class="conn" id="conn"></div>
 
 <header>
-  <a class="logo-wrap" href="#"><svg height="65" viewBox="0 0 1284 522" xmlns="http://www.w3.org/2000/svg">
+  <a class="logo-wrap" href="#"><svg height="38" viewBox="0 0 1284 522" xmlns="http://www.w3.org/2000/svg">
     <g
        id="g2"
        transform="translate(-8.534712,34.138847)">
@@ -189,7 +190,7 @@ header{position:sticky;top:0;z-index:100;padding:10px 28px;display:flex;align-it
 
 <section class="hero">
   <div style="display:flex;justify-content:center;margin-bottom:20px">
-    <div style="filter:drop-shadow(0 0 20px rgba(0,200,200,0.3))"><svg height="120" viewBox="0 0 1284 522" xmlns="http://www.w3.org/2000/svg">
+    <div style="filter:drop-shadow(0 0 20px rgba(0,200,200,0.3))"><svg height="90" viewBox="0 0 1284 522" xmlns="http://www.w3.org/2000/svg">
     <g
        id="g2"
        transform="translate(-8.534712,34.138847)">
@@ -386,7 +387,7 @@ header{position:sticky;top:0;z-index:100;padding:10px 28px;display:flex;align-it
         تأكيد وإرسال واتساب
       </button>
     </div>
-    <div class="success-view off" id="successView">
+    <div class="success-view" id="successView" style="display:none">
       <div class="success-icon">🎾</div>
       <h3>تم الحجز! 🎉</h3>
       <p>في انتظارك على الملعب</p>
@@ -565,7 +566,11 @@ function renderCourt(court) {
     const canBook = !isBooked && canBookDuration(court, selDate, s.from, dur);
     const div = document.createElement('div');
     div.className = 'slot' + ((!canBook || isBooked) ? ' booked' : '');
-    div.innerHTML = `<span class="st">${s.from}</span><span class="se">${calcEndTime(s.from, dur)}</span>`;
+    if (isBooked) {
+      div.innerHTML = `<span class="st">${to12(s.from)}</span><span class="se">${to12(calcEndTime(s.from, dur))}</span><span class="s-booked-lbl">محجوز</span>`;
+    } else {
+      div.innerHTML = `<span class="st">${to12(s.from)}</span><span class="se">${to12(calcEndTime(s.from, dur))}</span>`;
+    }
     if (canBook && !isBooked) div.onclick = () => openModal(key, s, court, dur);
     el.appendChild(div);
   });
@@ -573,6 +578,13 @@ function renderCourt(court) {
 
 function timeToMins(t) {
   const [h,m] = t.split(':').map(Number); return h*60+m;
+}
+
+function to12(t) {
+  const [h,m] = t.split(':').map(Number);
+  const period = h < 12 ? 'ص' : 'م';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return h12 + (m > 0 ? ':' + pad(m) : '') + ' ' + period;
 }
 
 function calcEndTime(from, durMins) {
@@ -610,14 +622,14 @@ function openModal(key, s, court, dur) {
   const durLabel = dur===60?'ساعة':dur===120?'ساعتان':'3 ساعات';
 
   document.getElementById('modalInfo').innerHTML =
-    `<strong>${cName}</strong><br>${fmt(s.date)} · ${s.from} – ${endTime} (${durLabel})`;
+    `<strong>${cName}</strong><br>${fmt(s.date)} · ${to12(s.from)} – ${to12(endTime)} (${durLabel})`;
   document.getElementById('modalPrice').textContent =
     pending.price.toLocaleString('ar-IQ') + ' د.ع';
   document.getElementById('inpName').value='';
   document.getElementById('inpPhone').value='';
   document.getElementById('inpWa').value='';
-  document.getElementById('formView').classList.remove('off');
-  document.getElementById('successView').classList.add('off');
+  document.getElementById('formView').style.display = 'block';
+  document.getElementById('successView').style.display = 'none';
   document.getElementById('overlay').classList.remove('off');
 }
 
@@ -668,9 +680,23 @@ async function doBook(withWa) {
   await fbPost('/bookings', bookingData);
   await fbPost('/notifications', {
     title:`حجز جديد من ${name}`,
-    msg:`${cName} · ${fmt(pending.date)} · ${pending.from}–${endTime} · ${pending.price.toLocaleString()} د.ع`,
+    msg:`${cName} · ${fmt(pending.date)} · ${to12(pending.from)}–${to12(endTime)} · ${pending.price.toLocaleString()} د.ع`,
     ts: Date.now(), read: false
   });
+
+  // ntfy push notification
+  try {
+    await fetch('https://ntfy.sh/padelpro_bookings_x9k2', {
+      method: 'POST',
+      headers: {
+        'Title': `🎾 حجز جديد من ${name}`,
+        'Priority': 'high',
+        'Tags': 'tada,tennis',
+        'Content-Type': 'text/plain; charset=utf-8'
+      },
+      body: `${cName}\n📅 ${fmt(pending.date)}\n⏰ ${to12(pending.from)} – ${to12(endTime)}\n👤 ${name} · ${phone}\n💰 ${pending.price.toLocaleString()} د.ع`
+    });
+  } catch(e) {}
 
   // Update local state
   bookings[Date.now()] = bookingData;
@@ -685,8 +711,8 @@ async function doBook(withWa) {
     <div class="brow"><span class="k">السعر</span><span class="v" style="color:var(--lime)">${pending.price.toLocaleString()} د.ع</span></div>
   `;
   document.getElementById('bdetails').innerHTML = cDetails;
-  document.getElementById('formView').classList.add('off');
-  document.getElementById('successView').classList.remove('off');
+  document.getElementById('formView').style.display = 'none';
+  document.getElementById('successView').style.display = 'block';
 
   // WhatsApp message
   const waMsg = encodeURIComponent(
@@ -708,6 +734,8 @@ async function doBook(withWa) {
   document.getElementById('btnConfirm').disabled = false;
   document.getElementById('btnConfirm').textContent = '✅ تأكيد الحجز';
   renderAllCourts();
+  // Auto close after 5 seconds
+  setTimeout(() => closeModal(), 5000);
 }
 
 document.getElementById('btnConfirm').onclick = () => doBook(false);
