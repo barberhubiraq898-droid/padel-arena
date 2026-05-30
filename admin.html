@@ -33,10 +33,10 @@ select.inp{appearance:none;cursor:pointer}
 select.inp option{background:#0b1518}
 .btn-login{width:100%;padding:13px;background:linear-gradient(135deg,var(--teal),#009999);border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;color:#000;cursor:pointer;margin-top:4px;transition:all 0.2s}
 .btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,200,200,0.3)}
-.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--teal);background:transparent;display:inline-block;transition:background 0.15s}
+.pin-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--teal);background:transparent;display:inline-block;transition:background 0.15s}
 .pin-dot.filled{background:var(--teal)}
 .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px}
-.pin-btn{padding:16px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);font-family:'Cairo',sans-serif;font-size:20px;font-weight:700;cursor:pointer;transition:all 0.15s;user-select:none}
+.pin-btn{padding:16px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);font-family:'Cairo',sans-serif;font-size:20px;font-weight:700;cursor:pointer;transition:all 0.15s;user-select:none;-webkit-user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .pin-btn:active,.pin-btn:hover{background:rgba(0,200,200,0.12);border-color:rgba(0,200,200,0.3);color:var(--teal)}
 .pin-btn-clear{color:var(--red)!important;font-size:16px!important}
 .pin-btn-del{color:var(--muted)!important;font-size:16px!important}
@@ -245,14 +245,12 @@ select.inp option{background:#0b1518}
 
     </div>
     <div class="ltitle">تسجيل الدخول</div>
-    <div class="lsub2">أدخل رمز PIN المكون من 6 أرقام</div>
-    <div id="pinDisplay" style="display:flex;justify-content:center;gap:10px;margin:18px 0">
+    <div class="lsub2">أدخل رمز PIN المكون من 4 أرقام</div>
+    <div id="pinDisplay" style="display:flex;justify-content:center;gap:16px;margin:22px 0">
       <span class="pin-dot" id="pd0"></span>
       <span class="pin-dot" id="pd1"></span>
       <span class="pin-dot" id="pd2"></span>
       <span class="pin-dot" id="pd3"></span>
-      <span class="pin-dot" id="pd4"></span>
-      <span class="pin-dot" id="pd5"></span>
     </div>
     <input type="hidden" id="lp" value="">
     <div class="pin-pad" id="pinPad">
@@ -558,21 +556,21 @@ select.inp option{background:#0b1518}
         <!-- كلمة المرور الموحدة -->
         <div class="card">
           <div class="ctitle"><div class="ci">🔐</div> تغيير رمز PIN (موحد لكل الأجهزة)</div>
-          <div class="hint hint-teal">رمز PIN مكون من 6 أرقام — محفوظ في Firebase لكل الأجهزة</div>
+          <div class="hint hint-teal">رمز PIN مكون من 4 أرقام — محفوظ في Firebase لكل الأجهزة</div>
           <div style="display:grid;gap:14px;margin-bottom:14px">
             <div>
               <div class="ilabel">PIN الحالي</div>
               <div style="display:flex;gap:6px;align-items:center">
-                <input type="text" inputmode="numeric" maxlength="6" class="inp" id="pwdOld" placeholder="● ● ● ● ● ●" style="letter-spacing:8px;font-size:18px;text-align:center" autocomplete="off">
+                <input type="text" inputmode="numeric" maxlength="4" class="inp" id="pwdOld" placeholder="● ● ● ● ● ●" style="letter-spacing:8px;font-size:18px;text-align:center" autocomplete="off">
               </div>
             </div>
             <div>
-              <div class="ilabel">PIN الجديد (6 أرقام)</div>
-              <input type="text" inputmode="numeric" maxlength="6" class="inp" id="pwdNew" placeholder="● ● ● ● ● ●" style="letter-spacing:8px;font-size:18px;text-align:center" autocomplete="off">
+              <div class="ilabel">PIN الجديد (4 أرقام)</div>
+              <input type="text" inputmode="numeric" maxlength="4" class="inp" id="pwdNew" placeholder="● ● ● ● ● ●" style="letter-spacing:8px;font-size:18px;text-align:center" autocomplete="off">
             </div>
             <div>
               <div class="ilabel">تأكيد PIN الجديد</div>
-              <input type="text" inputmode="numeric" maxlength="6" class="inp" id="pwdConf" placeholder="● ● ● ● ● ●" style="letter-spacing:8px;font-size:18px;text-align:center" autocomplete="off">
+              <input type="text" inputmode="numeric" maxlength="4" class="inp" id="pwdConf" placeholder="● ● ● ● ● ●" style="letter-spacing:8px;font-size:18px;text-align:center" autocomplete="off">
             </div>
           </div>
           <button class="btn btn-teal" style="max-width:220px" id="pwdBtn">🔐 تغيير رمز PIN</button>
@@ -624,20 +622,20 @@ async function fbPost(path, data) {
 // ══════════════════════════════════
 // AUTH – PIN based
 // ══════════════════════════════════
-function getPin() { return settings.adminPass || '123456'; }
+function getPin() { return settings.adminPass || '1234'; }
 function isLoggedIn() { return sessionStorage.getItem('auth') === '1'; }
 
 let pinBuffer = '';
 function pinPress(d) {
-  if (pinBuffer.length >= 6) return;
+  if (pinBuffer.length >= 4) return;
   pinBuffer += d;
   updatePinDots();
-  if (pinBuffer.length === 6) setTimeout(doLogin, 180);
+  if (pinBuffer.length === 4) setTimeout(doLogin, 180);
 }
 function pinDel() { pinBuffer = pinBuffer.slice(0,-1); updatePinDots(); }
 function pinClear() { pinBuffer = ''; updatePinDots(); }
 function updatePinDots() {
-  for (let i=0;i<6;i++) {
+  for (let i=0;i<4;i++) {
     const el = document.getElementById('pd'+i);
     if (el) el.className = 'pin-dot' + (i < pinBuffer.length ? ' filled' : '');
   }
@@ -1108,7 +1106,7 @@ window.changePwd = async function() {
   const nw=document.getElementById('pwdNew').value.trim();
   const cf=document.getElementById('pwdConf').value.trim();
   if (old !== getPin()) { toast('❌ رمز PIN الحالي غير صحيح',true); return; }
-  if (!/^\d{6}$/.test(nw)) { toast('⚠️ رمز PIN يجب أن يكون 6 أرقام بالضبط',true); return; }
+  if (!/^\d{4}$/.test(nw)) { toast('⚠️ رمز PIN يجب أن يكون 4 أرقام بالضبط',true); return; }
   if (nw !== cf) { toast('⚠️ رمزا PIN غير متطابقين',true); return; }
   await fbPatch('/settings', { adminPass: nw });
   settings.adminPass = nw;
@@ -1312,7 +1310,7 @@ async function autoCleanup() {
   if (total > 0) {
     renderAll();
     renderNotifs();
-    toast(\`🗑️ تم تنظيف \${total} سجل قديم تلقائياً\`);
+    toast(`🗑️ تم تنظيف ${total} سجل قديم تلقائياً`);
   }
 }
 
