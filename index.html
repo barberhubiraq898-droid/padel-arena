@@ -780,10 +780,7 @@ document.getElementById('btnWaConfirm').onclick = () => doBook(true);
 // ══════════════════════════════════
 // HELPERS
 // ══════════════════════════════════
-function fmt(d) {
-  if(!d) return '';
-  return new Date(d+'T00:00:00').toLocaleDateString('ar-SA',{weekday:'long',day:'numeric',month:'long'});
-}
+function fmt(d) { if(!d)return''; return new Date(d+'T00:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}); }
 function toast(msg, err=false) {
   const el=document.getElementById('toast');
   el.textContent=msg; el.className='toast show'+(err?' err':'');
