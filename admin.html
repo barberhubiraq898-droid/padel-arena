@@ -1355,7 +1355,7 @@ function renderBoard() {
 
   el.innerHTML = courts.map(ct => {
     const courtSlots = Object.entries(slots)
-      .filter(([k,s]) => s.court === ct.id && s.date === date)
+      .filter(([k,s]) => s.court === ct.id && s.date === date && !s.subOf)
       .sort((a,b) => a[1].from > b[1].from ? 1 : -1);
 
     if (!courtSlots.length) return `
@@ -1364,15 +1364,28 @@ function renderBoard() {
         <div style="font-size:12px;color:var(--muted);padding:12px">لا توجد أوقات مضافة لهذا اليوم</div>
       </div>`;
 
+    // جيب كل حجوزات هذا الملعب واليوم
+    const courtBookings = Object.values(bookings).filter(b =>
+      b.court === ct.id && b.date === date
+    );
+
     const slotsHtml = courtSlots.map(([key,s]) => {
-      const bk = Object.values(bookings).find(b =>
-        b.slotId === key || (b.subSlotIds && b.subSlotIds.includes(key))
-      );
-      const cls = bk ? (bk.manual ? 'manual' : 'booked') : 'free';
+      const slotFrom = timeToMins(s.from);
+      const slotTo   = timeToMins(s.to);
+
+      // تحقق: هل هذا الـ slot يقع ضمن مدة أي حجز؟
+      const bk = courtBookings.find(b => {
+        const bFrom = timeToMins(b.from);
+        const bTo   = timeToMins(b.to);
+        return slotFrom >= bFrom && slotTo <= bTo;
+      });
+
+      const cls   = bk ? (bk.manual ? 'manual' : 'booked') : 'free';
       const label = bk ? (bk.name.length > 10 ? bk.name.slice(0,10)+'…' : bk.name) : 'متاح';
+      const dur   = bk ? ` · ${(timeToMins(bk.to)-timeToMins(bk.from))/60}س` : '';
       return `<div class="board-slot ${cls}">
         <div class="board-slot-time">${to12(s.from)}</div>
-        <div class="board-slot-name">${label}</div>
+        <div class="board-slot-name">${label}${dur}</div>
       </div>`;
     }).join('');
 
