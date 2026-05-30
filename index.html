@@ -633,22 +633,27 @@ function calcEndTime(from, durMins) {
   return pad(Math.floor(total/60))+':'+pad(total%60);
 }
 
+function nextDay(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().split('T')[0];
+}
+
 function canBookDuration(court, date, from, durMins) {
   if (durMins <= 60) return true;
-  // Check consecutive slots
   const hours = durMins / 60;
   let cur = timeToMins(from);
+  let curDate = date;
   for (let i = 0; i < hours; i++) {
+    if (cur >= 1440) { cur -= 1440; curDate = nextDay(date); }
     const timeStr = pad(Math.floor(cur/60))+':'+pad(cur%60);
-    // Find slot
-    const found = Object.entries(slots).find(([k,s])=>s.court===court&&s.date===date&&s.from===timeStr);
+    const found = Object.entries(slots).find(([k,s])=>s.court===court&&s.date===curDate&&s.from===timeStr);
     if (!found) return false;
     const [slotKey] = found;
     if (Object.values(bookings).some(b=>
       b.slotId===slotKey || (b.allSlots && b.allSlots.includes(slotKey))
     )) return false;
     cur += 60;
-    if (cur >= 1440) cur -= 1440;
   }
   return true;
 }
@@ -698,12 +703,14 @@ async function doBook(withWa) {
   // Book all consecutive slots for multi-hour
   const hours = pending.dur / 60;
   let cur = timeToMins(pending.from);
+  let curDate = pending.date;
   const bookedSlots = [];
   for (let i = 0; i < hours; i++) {
+    if (cur >= 1440) { cur -= 1440; curDate = nextDay(pending.date); }
     const timeStr = pad(Math.floor(cur/60))+':'+pad(cur%60);
-    const found = Object.entries(slots).find(([k,s])=>s.court===pending.court&&s.date===pending.date&&s.from===timeStr);
+    const found = Object.entries(slots).find(([k,s])=>s.court===pending.court&&s.date===curDate&&s.from===timeStr);
     if (found) bookedSlots.push(found[0]);
-    cur += 60; if(cur>=1440) cur-=1440;
+    cur += 60;
   }
 
   const bookingData = {

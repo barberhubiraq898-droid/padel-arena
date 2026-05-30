@@ -1260,18 +1260,27 @@ window.doManualBook = async function() {
   // Also create intermediate hourly slots so board shows the full duration
   const fromMinsTotal = timeToMins(from);
   const toMinsTotal = timeToMins(to);
+  // إذا النهاية أصغر من البداية = عبرت منتصف الليل
+  const durationMins = toMinsTotal > fromMinsTotal
+    ? toMinsTotal - fromMinsTotal
+    : (1440 - fromMinsTotal) + toMinsTotal;
+
   const subSlotKeys = [slotKey];
-  for (let cur = fromMinsTotal + 60; cur < toMinsTotal; cur += 60) {
+  let cur = fromMinsTotal + 60;
+  let curDate = date;
+  for (let elapsed = 60; elapsed < durationMins; elapsed += 60) {
+    if (cur >= 1440) { cur -= 1440; curDate = nextDay(date); }
     const hh = Math.floor(cur / 60) % 24, mm = cur % 60;
     const midFrom = pad(hh) + ':' + pad(mm);
     const midToM = cur + 60;
     const midTo = pad(Math.floor(midToM/60)%24) + ':' + pad(midToM%60);
-    const subKey = 'slot_'+date.replace(/-/g,'')+'_c'+court+'_'+midFrom.replace(':','');
+    const subKey = 'slot_'+curDate.replace(/-/g,'')+'_c'+court+'_'+midFrom.replace(':','');
     if (!slots[subKey]) {
-      await fbSet('/slots/'+subKey, {court, date, from: midFrom, to: midTo, subOf: slotKey});
-      slots[subKey] = {court, date, from: midFrom, to: midTo, subOf: slotKey};
+      await fbSet('/slots/'+subKey, {court, date: curDate, from: midFrom, to: midTo, subOf: slotKey});
+      slots[subKey] = {court, date: curDate, from: midFrom, to: midTo, subOf: slotKey};
     }
     subSlotKeys.push(subKey);
+    cur += 60;
   }
 
   // Check time conflict (overlap check, not just exact key)
@@ -1373,11 +1382,18 @@ function renderBoard() {
       const slotFrom = timeToMins(s.from);
       const slotTo   = timeToMins(s.to);
 
-      // تحقق: هل هذا الـ slot يقع ضمن مدة أي حجز؟
+      // تحقق: هل هذا الـ slot يقع ضمن مدة أي حجز؟ (مع دعم تجاوز منتصف الليل)
       const bk = courtBookings.find(b => {
         const bFrom = timeToMins(b.from);
         const bTo   = timeToMins(b.to);
-        return slotFrom >= bFrom && slotTo <= bTo;
+        const dur   = bTo > bFrom ? bTo - bFrom : (1440 - bFrom) + bTo;
+        // تحقق من كل ساعة في الحجز
+        for (let e = 0; e < dur; e += 60) {
+          const checkMins = (bFrom + e) % 1440;
+          const checkDate = (bFrom + e) >= 1440 ? nextDay(b.date) : b.date;
+          if (checkMins === slotFrom && checkDate === s.date) return true;
+        }
+        return false;
       });
 
       const cls   = bk ? (bk.manual ? 'manual' : 'booked') : 'free';
@@ -1582,6 +1598,11 @@ function calcMPrice() {}
 
 function pad(n) { return n < 10 ? '0'+n : ''+n; }
 function timeToMins(t) { const [h,m]=t.split(':').map(Number); return h*60+m; }
+function nextDay(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().split('T')[0];
+}
 function fmt(d) {
   if(!d) return '';
   const dt = new Date(d+'T00:00:00');
