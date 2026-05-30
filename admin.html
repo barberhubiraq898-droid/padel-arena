@@ -33,6 +33,13 @@ select.inp{appearance:none;cursor:pointer}
 select.inp option{background:#0b1518}
 .btn-login{width:100%;padding:13px;background:linear-gradient(135deg,var(--teal),#009999);border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;color:#000;cursor:pointer;margin-top:4px;transition:all 0.2s}
 .btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,200,200,0.3)}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--teal);background:transparent;display:inline-block;transition:background 0.15s}
+.pin-dot.filled{background:var(--teal)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px}
+.pin-btn{padding:16px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);font-family:'Cairo',sans-serif;font-size:20px;font-weight:700;cursor:pointer;transition:all 0.15s;user-select:none}
+.pin-btn:active,.pin-btn:hover{background:rgba(0,200,200,0.12);border-color:rgba(0,200,200,0.3);color:var(--teal)}
+.pin-btn-clear{color:var(--red)!important;font-size:16px!important}
+.pin-btn-del{color:var(--muted)!important;font-size:16px!important}
 .lerr{color:var(--red);font-size:12px;margin-top:8px;text-align:center;min-height:16px}
 
 /* ADMIN */
@@ -167,6 +174,17 @@ select.inp option{background:#0b1518}
 .confirm-box p{color:var(--muted);font-size:13px;margin-bottom:20px;line-height:1.6}
 .confirm-acts{display:flex;gap:8px;justify-content:center}
 
+/* BOARD VIEW */
+.board-court{margin-bottom:20px}
+.board-court-title{font-size:13px;font-weight:700;color:var(--teal);margin-bottom:8px;padding:8px 12px;background:rgba(0,200,200,0.06);border-radius:10px;border:1px solid rgba(0,200,200,0.15)}
+.board-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
+.board-slot{border-radius:10px;padding:10px 8px;text-align:center;border:1px solid;cursor:default;transition:all 0.15s}
+.board-slot.free{background:rgba(0,200,200,0.05);border-color:rgba(0,200,200,0.2);color:var(--teal)}
+.board-slot.booked{background:rgba(255,68,68,0.07);border-color:rgba(255,68,68,0.2);color:var(--red)}
+.board-slot.manual{background:rgba(245,158,11,0.07);border-color:rgba(245,158,11,0.2);color:var(--orange)}
+.board-slot-time{font-size:12px;font-weight:700}
+.board-slot-name{font-size:10px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 /* TOAST */
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--teal);border-radius:12px;padding:11px 20px;font-size:13px;font-weight:700;color:var(--teal);z-index:300;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);white-space:nowrap;box-shadow:0 8px 28px rgba(0,200,200,0.2)}
 .toast.show{transform:translateX(-50%) translateY(0)}
@@ -227,9 +245,31 @@ select.inp option{background:#0b1518}
 
     </div>
     <div class="ltitle">تسجيل الدخول</div>
-    <div class="lsub2">أدخل بياناتك للمتابعة</div>
-    <div class="fld"><label>كلمة المرور</label><input class="inp" id="lp" type="password" placeholder="••••••••" autocomplete="current-password"></div>
-    <button class="btn-login" id="loginBtn">🔐 دخول</button>
+    <div class="lsub2">أدخل رمز PIN المكون من 6 أرقام</div>
+    <div id="pinDisplay" style="display:flex;justify-content:center;gap:10px;margin:18px 0">
+      <span class="pin-dot" id="pd0"></span>
+      <span class="pin-dot" id="pd1"></span>
+      <span class="pin-dot" id="pd2"></span>
+      <span class="pin-dot" id="pd3"></span>
+      <span class="pin-dot" id="pd4"></span>
+      <span class="pin-dot" id="pd5"></span>
+    </div>
+    <input type="hidden" id="lp" value="">
+    <div class="pin-pad" id="pinPad">
+      <button class="pin-btn" onclick="pinPress('1')">1</button>
+      <button class="pin-btn" onclick="pinPress('2')">2</button>
+      <button class="pin-btn" onclick="pinPress('3')">3</button>
+      <button class="pin-btn" onclick="pinPress('4')">4</button>
+      <button class="pin-btn" onclick="pinPress('5')">5</button>
+      <button class="pin-btn" onclick="pinPress('6')">6</button>
+      <button class="pin-btn" onclick="pinPress('7')">7</button>
+      <button class="pin-btn" onclick="pinPress('8')">8</button>
+      <button class="pin-btn" onclick="pinPress('9')">9</button>
+      <button class="pin-btn pin-btn-clear" onclick="pinClear()">✕</button>
+      <button class="pin-btn" onclick="pinPress('0')">0</button>
+      <button class="pin-btn pin-btn-del" onclick="pinDel()">⌫</button>
+    </div>
+    <button class="btn-login" id="loginBtn" style="margin-top:14px">🔐 دخول</button>
     <div class="lerr" id="lerr"></div>
   </div>
 </div>
@@ -273,6 +313,7 @@ select.inp option{background:#0b1518}
       <button class="tab on" data-tab="bookings">الحجوزات</button>
       <button class="tab" data-tab="manual">حجز يدوي</button>
       <button class="tab" data-tab="slots">الأوقات</button>
+      <button class="tab" data-tab="board">لوحة الملاعب</button>
       <button class="tab" data-tab="notifs">الإشعارات</button>
       <button class="tab" data-tab="settings">الإعدادات</button>
     </div>
@@ -443,6 +484,18 @@ select.inp option{background:#0b1518}
     </div>
 
 
+    <!-- ══ BOARD TAB ══ -->
+    <div class="panel" id="panel-board">
+      <div class="card full">
+        <div class="ctitle"><div class="ci">🎾</div> لوحة الملاعب – اليوم
+          <span style="font-size:11px;color:var(--muted);margin-right:auto">
+            <input type="date" class="inp" id="boardDate" style="padding:4px 8px;font-size:11px;width:auto;display:inline-block">
+          </span>
+        </div>
+        <div id="boardGrid"></div>
+      </div>
+    </div>
+
     <!-- ══ NOTIFS TAB ══ -->
     <div class="panel" id="panel-notifs">
       <div class="card full">
@@ -491,19 +544,38 @@ select.inp option{background:#0b1518}
             <div><div class="ilabel">رقم واتساب الحجز</div><input type="tel" class="inp" id="vWaNumber" placeholder="9647xxxxxxxxx" dir="ltr"></div>
             <div><div class="ilabel">السعر (اختياري)</div><input type="text" class="inp" id="vPrice" placeholder="50 ريال/ساعة"></div>
           </div>
+          <div><div class="ilabel">تذكير واتساب قبل الحجز</div>
+            <select class="inp" id="vReminderHrs">
+              <option value="0">معطّل</option>
+              <option value="1" selected>قبل ساعة</option>
+              <option value="2">قبل ساعتين</option>
+              <option value="3">قبل 3 ساعات</option>
+            </select>
+          </div>
           <button class="btn btn-ghost" style="max-width:200px" id="saveVenueBtn">💾 حفظ الإعدادات</button>
         </div>
 
         <!-- كلمة المرور الموحدة -->
         <div class="card">
-          <div class="ctitle"><div class="ci">🔐</div> كلمة المرور (موحدة لكل الأجهزة)</div>
-          <div class="hint hint-teal">الدخول برقم السر فقط — محفوظ في Firebase لكل الأجهزة</div>
-          <div style="display:grid;gap:10px;margin-bottom:14px">
-            <div><div class="ilabel">كلمة المرور الحالية</div><input type="password" class="inp" id="pwdOld" placeholder="••••••••"></div>
-            <div><div class="ilabel">كلمة المرور الجديدة</div><input type="password" class="inp" id="pwdNew" placeholder="••••••••"></div>
-            <div><div class="ilabel">تأكيد كلمة المرور</div><input type="password" class="inp" id="pwdConf" placeholder="••••••••"></div>
+          <div class="ctitle"><div class="ci">🔐</div> تغيير رمز PIN (موحد لكل الأجهزة)</div>
+          <div class="hint hint-teal">رمز PIN مكون من 6 أرقام — محفوظ في Firebase لكل الأجهزة</div>
+          <div style="display:grid;gap:14px;margin-bottom:14px">
+            <div>
+              <div class="ilabel">PIN الحالي</div>
+              <div style="display:flex;gap:6px;align-items:center">
+                <input type="text" inputmode="numeric" maxlength="6" class="inp" id="pwdOld" placeholder="● ● ● ● ● ●" style="letter-spacing:8px;font-size:18px;text-align:center" autocomplete="off">
+              </div>
+            </div>
+            <div>
+              <div class="ilabel">PIN الجديد (6 أرقام)</div>
+              <input type="text" inputmode="numeric" maxlength="6" class="inp" id="pwdNew" placeholder="● ● ● ● ● ●" style="letter-spacing:8px;font-size:18px;text-align:center" autocomplete="off">
+            </div>
+            <div>
+              <div class="ilabel">تأكيد PIN الجديد</div>
+              <input type="text" inputmode="numeric" maxlength="6" class="inp" id="pwdConf" placeholder="● ● ● ● ● ●" style="letter-spacing:8px;font-size:18px;text-align:center" autocomplete="off">
+            </div>
           </div>
-          <button class="btn btn-teal" style="max-width:220px" id="pwdBtn">🔐 تغيير كلمة المرور</button>
+          <button class="btn btn-teal" style="max-width:220px" id="pwdBtn">🔐 تغيير رمز PIN</button>
         </div>
 
       </div>
@@ -550,33 +622,45 @@ async function fbPost(path, data) {
 }
 
 // ══════════════════════════════════
-// AUTH
+// AUTH – PIN based
 // ══════════════════════════════════
-function getPass() { return settings.adminPass || 'admin123'; }
-function getUser() { return settings.adminUser || 'admin'; }
+function getPin() { return settings.adminPass || '123456'; }
 function isLoggedIn() { return sessionStorage.getItem('auth') === '1'; }
 
+let pinBuffer = '';
+function pinPress(d) {
+  if (pinBuffer.length >= 6) return;
+  pinBuffer += d;
+  updatePinDots();
+  if (pinBuffer.length === 6) setTimeout(doLogin, 180);
+}
+function pinDel() { pinBuffer = pinBuffer.slice(0,-1); updatePinDots(); }
+function pinClear() { pinBuffer = ''; updatePinDots(); }
+function updatePinDots() {
+  for (let i=0;i<6;i++) {
+    const el = document.getElementById('pd'+i);
+    if (el) el.className = 'pin-dot' + (i < pinBuffer.length ? ' filled' : '');
+  }
+}
 document.getElementById('loginBtn').onclick = doLogin;
-document.getElementById('lp').onkeydown = e => { if(e.key==='Enter') doLogin(); };
 document.getElementById('logoutBtn').onclick = () => { sessionStorage.removeItem('auth'); location.reload(); };
 
 async function doLogin() {
-  const p = document.getElementById('lp').value;
+  const p = pinBuffer || document.getElementById('lp').value;
   const btn = document.getElementById('loginBtn');
   btn.textContent = '⏳ جاري التحقق...';
   btn.disabled = true;
-  // Load settings from Firebase to get latest credentials
   const s = await fbGet('/settings').catch(()=>({}));
   settings = s || {};
-  const validPass = settings.adminPass || 'admin123';
-  if (p === validPass) {
+  if (p === getPin()) {
     sessionStorage.setItem('auth','1');
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
     init();
   } else {
+    pinBuffer = ''; updatePinDots();
     const el = document.getElementById('lerr');
-    el.textContent = '❌ بيانات الدخول غير صحيحة';
+    el.textContent = '❌ رمز PIN غير صحيح';
     setTimeout(() => el.textContent='', 3000);
     btn.textContent = '🔐 دخول';
     btn.disabled = false;
@@ -610,6 +694,8 @@ async function init() {
 
   // Poll every 15 seconds for new bookings/notifications
   setInterval(loadAll, 15000);
+  // Check WhatsApp reminders every minute
+  setInterval(checkReminders, 60000);
 }
 
 async function loadAll() {
@@ -631,8 +717,9 @@ async function loadAll() {
   renderAll();
   loadSettingsUI();
   renderHolidays();
-  renderSchedule();
   renderNotifs();
+  // Run cleanup once per session
+  if (!window._cleanedUp) { window._cleanedUp = true; autoCleanup(); }
 }
 
 function renderAll() {
@@ -640,6 +727,7 @@ function renderAll() {
   renderSlots();
   renderBookings();
   renderManualBookings();
+  renderBoard();
   updateNotifBadge();
 }
 
@@ -877,6 +965,7 @@ function loadSettingsUI() {
   if (settings.venueName) document.getElementById('vName').value = settings.venueName;
   if (settings.venuePrice) document.getElementById('vPrice').value = settings.venuePrice;
   if (settings.waNumber) document.getElementById('vWaNumber').value = settings.waNumber;
+  if (settings.reminderHrs !== undefined) document.getElementById('vReminderHrs').value = settings.reminderHrs;
   buildDaysSel();
 }
 
@@ -896,7 +985,6 @@ window.saveWorkHours = async function() {
   const s = { ...settings, openTime: document.getElementById('sOpen').value, closeTime: document.getElementById('sClose').value, workDays: selWorkDays };
   await fbSet('/settings', s);
   settings = s;
-  renderSchedule();
   toast('✅ تم حفظ أوقات العمل');
 };
 
@@ -911,7 +999,6 @@ window.addHoliday = async function() {
   settings.holidays[key] = {date,name};
   await fbSet('/settings/holidays/'+key, {date,name});
   renderHolidays();
-  renderSchedule();
   toast('🔴 تم إضافة يوم الإجازة');
 };
 
@@ -919,7 +1006,6 @@ window.removeHoliday = async function(key) {
   await fbDelete('/settings/holidays/'+key);
   delete settings.holidays[key];
   renderHolidays();
-  renderSchedule();
   toast('✅ تم حذف الإجازة');
 };
 
@@ -936,29 +1022,6 @@ function renderHolidays() {
     </div>`).join('');
 }
 
-function renderSchedule() {
-  const el = document.getElementById('schPreview');
-  if (!el) return;
-  const wDays = settings.workDays || [0,1,2,3,4,5,6];
-  const hDays = settings.holidays ? Object.values(settings.holidays).map(h=>h.date) : [];
-  const now = new Date();
-
-  el.innerHTML = Array.from({length:7},(_,i)=>{
-    const d = new Date(now); d.setDate(now.getDate()+i);
-    const ds = d.toISOString().split('T')[0];
-    const isH = hDays.includes(ds), isW = wDays.includes(d.getDay());
-    const open = isW && !isH;
-    const sv = Object.values(slots).filter(s=>s.date===ds);
-    const bv = Object.values(bookings).filter(b=>b.date===ds);
-    return `<div class="sch-day" style="background:${open?'rgba(0,200,200,0.05)':'rgba(255,68,68,0.05)'};border-color:${open?'rgba(0,200,200,0.15)':'rgba(255,68,68,0.15)'}">
-      <div style="font-size:10px;color:var(--muted);margin-bottom:4px">${i===0?'اليوم':DAY_SHORT[d.getDay()]}</div>
-      <div style="font-size:18px;font-weight:800;margin-bottom:4px">${d.getDate()}</div>
-      <div style="font-size:10px;color:${open?'var(--teal)':'var(--red)'};margin-bottom:6px">${isH?'إجازة':isW?'مفتوح':'مغلق'}</div>
-      <div style="font-size:9px;color:var(--muted)">${sv.length} وقت</div>
-      <div style="font-size:9px;color:var(--red)">${bv.length} حجز</div>
-    </div>`;
-  }).join('');
-}
 
 // ══════════════════════════════════
 // NOTIFICATIONS
@@ -1041,23 +1104,26 @@ window.clearAllSlots = function() {
 // PASSWORD
 // ══════════════════════════════════
 window.changePwd = async function() {
-  const old=document.getElementById('pwdOld').value, nw=document.getElementById('pwdNew').value.trim(), cf=document.getElementById('pwdConf').value;
-  if (old !== getPass()) { toast('❌ كلمة المرور الحالية غير صحيحة',true); return; }
-  if (nw.length < 4) { toast('⚠️ كلمة المرور قصيرة جداً',true); return; }
-  if (nw !== cf) { toast('⚠️ كلمتا المرور غير متطابقتين',true); return; }
-  // Save to Firebase - works on all devices
+  const old=document.getElementById('pwdOld').value.trim();
+  const nw=document.getElementById('pwdNew').value.trim();
+  const cf=document.getElementById('pwdConf').value.trim();
+  if (old !== getPin()) { toast('❌ رمز PIN الحالي غير صحيح',true); return; }
+  if (!/^\d{6}$/.test(nw)) { toast('⚠️ رمز PIN يجب أن يكون 6 أرقام بالضبط',true); return; }
+  if (nw !== cf) { toast('⚠️ رمزا PIN غير متطابقين',true); return; }
   await fbPatch('/settings', { adminPass: nw });
   settings.adminPass = nw;
   ['pwdOld','pwdNew','pwdConf'].forEach(id=>document.getElementById(id).value='');
-  toast('✅ تم تغيير كلمة المرور — محفوظة لكل الأجهزة');
+  toast('✅ تم تغيير رمز PIN — محفوظ لكل الأجهزة');
 };
 
 window.saveVenueSettings = async function() {
   const waNum = document.getElementById('vWaNumber').value.trim().replace(/[^0-9]/g,'');
+  const reminderHrs = parseInt(document.getElementById('vReminderHrs').value) || 0;
   const s = { ...settings,
     venueName: document.getElementById('vName').value.trim(),
     venuePrice: document.getElementById('vPrice').value.trim(),
-    waNumber: waNum
+    waNumber: waNum,
+    reminderHrs
   };
   await fbSet('/settings', s);
   settings = s;
@@ -1065,11 +1131,15 @@ window.saveVenueSettings = async function() {
 };
 
 // ══ ARRIVAL TRACKING ══
-window.markArrival = async function(key) {
-  await fbPatch('/bookings/'+key, { arrivedAt: Date.now() });
-  if (bookings[key]) bookings[key].arrivedAt = Date.now();
-  renderBookings();
-  toast('✅ تم تسجيل وصول اللاعب');
+window.markArrival = function(key) {
+  const b = bookings[key];
+  const name = b ? b.name : '';
+  confirmDialog(`تأكيد وصول: ${name}`, async () => {
+    await fbPatch('/bookings/'+key, { arrivedAt: Date.now() });
+    if (bookings[key]) bookings[key].arrivedAt = Date.now();
+    renderBookings();
+    toast('✅ تم تسجيل وصول اللاعب');
+  });
 };
 
 // ══ MANUAL BOOKING ══
@@ -1092,9 +1162,13 @@ window.doManualBook = async function() {
     slots[slotKey] = {court, date, from, to};
   }
 
-  // Check not already booked
-  const alreadyBooked = Object.values(bookings).some(b=>b.slotId===slotKey);
-  if (alreadyBooked) { toast('⚠️ هذا الوقت محجوز بالفعل',true); return; }
+  // Check time conflict (overlap check, not just exact key)
+  const fromMins = timeToMins(from), toMins = timeToMins(to);
+  const conflict = Object.values(bookings).some(b =>
+    b.court === court && b.date === date &&
+    timeToMins(b.from) < toMins && timeToMins(b.to) > fromMins
+  );
+  if (conflict) { toast('⚠️ يوجد تعارض مع حجز آخر في نفس الوقت',true); return; }
 
   const bookingData = {
     slotId: slotKey, court, date, from, to,
@@ -1137,6 +1211,109 @@ function renderManualBookings() {
         <button class="bsm bsm-r" onclick="cancelBook('${key}')">إلغاء</button>
       </div>
     </div>`).join('');
+}
+
+// ══════════════════════════════════
+// BOARD VIEW
+// ══════════════════════════════════
+function renderBoard() {
+  const el = document.getElementById('boardGrid');
+  if (!el) return;
+  const dateEl = document.getElementById('boardDate');
+  const date = dateEl ? dateEl.value : new Date().toISOString().split('T')[0];
+
+  const courts = [
+    {id:'1', label:'🔵 الملعب الأول – بادل'},
+    {id:'2', label:'🟢 الملعب الثاني – بادل'},
+    {id:'3', label:'🟠 ملعب Padbol'}
+  ];
+
+  el.innerHTML = courts.map(ct => {
+    const courtSlots = Object.entries(slots)
+      .filter(([k,s]) => s.court === ct.id && s.date === date)
+      .sort((a,b) => a[1].from > b[1].from ? 1 : -1);
+
+    if (!courtSlots.length) return `
+      <div class="board-court">
+        <div class="board-court-title">${ct.label}</div>
+        <div style="font-size:12px;color:var(--muted);padding:12px">لا توجد أوقات مضافة لهذا اليوم</div>
+      </div>`;
+
+    const slotsHtml = courtSlots.map(([key,s]) => {
+      const bk = Object.values(bookings).find(b => b.slotId === key);
+      const cls = bk ? (bk.manual ? 'manual' : 'booked') : 'free';
+      const label = bk ? (bk.name.length > 10 ? bk.name.slice(0,10)+'…' : bk.name) : 'متاح';
+      return `<div class="board-slot ${cls}">
+        <div class="board-slot-time">${s.from}</div>
+        <div class="board-slot-name">${label}</div>
+      </div>`;
+    }).join('');
+
+    return `<div class="board-court">
+      <div class="board-court-title">${ct.label}</div>
+      <div class="board-slots">${slotsHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════
+// WHATSAPP REMINDER
+// ══════════════════════════════════
+let sentReminders = new Set();
+function checkReminders() {
+  const hrs = settings.reminderHrs || 0;
+  const waNum = settings.waNumber;
+  if (!hrs || !waNum) return;
+
+  const now = new Date();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  const today = now.toISOString().split('T')[0];
+
+  Object.entries(bookings).forEach(([key, b]) => {
+    if (b.date !== today) return;
+    if (sentReminders.has(key)) return;
+    const slotMins = timeToMins(b.from);
+    const diff = slotMins - nowMins;
+    if (diff > 0 && diff <= hrs * 60 && diff > hrs * 60 - 2) {
+      sentReminders.add(key);
+      const msg = encodeURIComponent(
+        `مرحباً ${b.name} 👋
+تذكير بحجزك في ${settings.venueName || 'ملعب البادل'} اليوم الساعة ${b.from} 🎾
+نتطلع لرؤيتك!`
+      );
+      const phone = b.phone.replace(/[^0-9]/g, '');
+      window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+    }
+  });
+}
+
+// ══════════════════════════════════
+// AUTO CLEANUP (older than 7 days)
+// ══════════════════════════════════
+async function autoCleanup() {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 7);
+  const cutoffStr = cutoff.toISOString().split('T')[0];
+
+  const oldSlots = Object.keys(slots).filter(k => slots[k].date < cutoffStr);
+  const oldBookings = Object.keys(bookings).filter(k => bookings[k].date < cutoffStr);
+  const oldNotifs = Object.keys(notifs).filter(k => {
+    const age = (Date.now() - notifs[k].ts) / (1000 * 60 * 60 * 24);
+    return age > 30;
+  });
+
+  const total = oldSlots.length + oldBookings.length + oldNotifs.length;
+  if (!total) return;
+
+  for (const k of oldSlots) { await fbDelete('/slots/'+k); delete slots[k]; }
+  for (const k of oldBookings) { await fbDelete('/bookings/'+k); delete bookings[k]; }
+  for (const k of oldNotifs) { await fbDelete('/notifications/'+k); delete notifs[k]; }
+
+  if (total > 0) {
+    renderAll();
+    renderNotifs();
+    toast(\`🗑️ تم تنظيف \${total} سجل قديم تلقائياً\`);
+  }
 }
 
 // ══════════════════════════════════
@@ -1200,6 +1377,13 @@ function setupUI() {
     toast('🗑️ تم حذف جميع الإشعارات');
   };
   document.getElementById('confirmNo').onclick = ()=>document.getElementById('confirmOverlay').classList.add('off');
+
+  // Board date picker
+  const boardDate = document.getElementById('boardDate');
+  if (boardDate) {
+    boardDate.value = new Date().toISOString().split('T')[0];
+    boardDate.oninput = renderBoard;
+  }
 }
 
 // ══════════════════════════════════
