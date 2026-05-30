@@ -433,6 +433,10 @@ const WA_NUMBER = '9647800000000'; // غير هذا لرقم واتساب الم
 async function fbGet(path) {
   try { const r = await fetch(DB+path+'.json'); return r.json(); } catch(e) { return null; }
 }
+async function fbQuery(path, fromDate) {
+  const url = `${DB}${path}.json?orderBy="date"&startAt="${fromDate}"`;
+  try { const r = await fetch(url); return r.json(); } catch(e) { return {}; }
+}
 async function fbPost(path, data) {
   const r = await fetch(DB+path+'.json',{method:'POST',body:JSON.stringify(data)});
   return r.json();
@@ -470,9 +474,10 @@ window.selectDur = function(el) {
 // LOAD DATA
 // ══════════════════════════════════
 async function loadData() {
+  const today = new Date().toISOString().split('T')[0];
   [slots, bookings, settings] = await Promise.all([
-    fbGet('/slots').then(d=>d||{}),
-    fbGet('/bookings').then(d=>d||{}),
+    fbQuery('/slots', today).then(d=>d||{}),
+    fbQuery('/bookings', today).then(d=>d||{}),
     fbGet('/settings').then(d=>d||{})
   ]);
   updateHoursBar();
@@ -482,9 +487,10 @@ async function loadData() {
 
 // Poll every 20s
 setInterval(async () => {
+  const today = new Date().toISOString().split('T')[0];
   [slots, bookings, settings] = await Promise.all([
-    fbGet('/slots').then(d=>d||{}),
-    fbGet('/bookings').then(d=>d||{}),
+    fbQuery('/slots', today).then(d=>d||{}),
+    fbQuery('/bookings', today).then(d=>d||{}),
     fbGet('/settings').then(d=>d||{})
   ]);
   renderAllCourts();
@@ -682,18 +688,6 @@ async function doBook(withWa) {
   const wa = document.getElementById('inpWa').value.trim() || phone;
   if (!name) { toast('⚠️ أدخل اسمك الكامل', true); return; }
   if (!phone) { toast('⚠️ أدخل رقم الجوال', true); return; }
-
-  // منع نفس الرقم من الحجز أكثر من مرة في نفس اليوم
-  const phoneClean = phone.replace(/\D/g,'');
-  const dupPhone = Object.values(bookings).find(b =>
-    b.date === pending.date && b.phone && b.phone.replace(/\D/g,'') === phoneClean
-  );
-  if (dupPhone) {
-    toast('⚠️ هذا الرقم عنده حجز بالفعل في هذا اليوم', true);
-    document.getElementById('btnConfirm').disabled = false;
-    document.getElementById('btnConfirm').textContent = '✅ تأكيد الحجز';
-    return;
-  }
 
   document.getElementById('btnConfirm').disabled = true;
   document.getElementById('btnConfirm').textContent = '⏳ جاري الحجز...';

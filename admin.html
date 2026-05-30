@@ -624,6 +624,11 @@ async function fbGet(path) {
   const r = await fetch(DB + path + '.json');
   return r.json();
 }
+// جلب مفلتر حسب حقل date >= today
+async function fbQuery(path, fromDate) {
+  const url = `${DB}${path}.json?orderBy="date"&startAt="${fromDate}"`;
+  try { const r = await fetch(url); return r.json(); } catch(e) { return {}; }
+}
 async function fbSet(path, data) {
   await fetch(DB + path + '.json', { method:'PUT', body: JSON.stringify(data) });
 }
@@ -715,9 +720,10 @@ async function init() {
 }
 
 async function loadAll() {
+  const today = new Date().toISOString().split('T')[0];
   [slots, bookings, notifs, settings] = await Promise.all([
-    fbGet('/slots').then(d=>d||{}),
-    fbGet('/bookings').then(d=>d||{}),
+    fbQuery('/slots', today).then(d=>d||{}),
+    fbQuery('/bookings', today).then(d=>d||{}),
     fbGet('/notifications').then(d=>d||{}),
     fbGet('/settings').then(d=>d||{})
   ]);
@@ -924,7 +930,7 @@ window.autoGenSlots = async function() {
   try {
     await fbPatch('/slots', toWrite);
     // Reload from Firebase to get fresh data
-    const fresh = await fbGet('/slots');
+    const fresh = await fbQuery('/slots', new Date().toISOString().split('T')[0]);
     slots = fresh || {};
     renderAll();
     toast(`✅ تم توليد ${added} وقت بنجاح`);
@@ -1122,7 +1128,7 @@ window.clearAllSlots = function() {
     await fbDelete('/slots');
     slots = {};
     // Force reload from Firebase to confirm
-    const fresh = await fbGet('/slots');
+    const fresh = await fbQuery('/slots', new Date().toISOString().split('T')[0]);
     slots = fresh || {};
     renderAll();
     toast('✅ تم حذف كل الأوقات — يمكنك التوليد الآن');
