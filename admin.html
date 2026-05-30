@@ -187,6 +187,10 @@ select.inp option{background:#0b1518}
   .h-logo svg{height:28px!important}
   .h-actions{gap:4px!important}
   .hbtn{padding:5px 8px!important;font-size:11px!important}
+  #panel-manual .inp{width:100%!important;box-sizing:border-box!important;display:block!important}
+  #panel-manual select.inp{width:100%!important;appearance:auto!important}
+  #panel-manual input[type="time"]{width:100%!important;min-width:0!important}
+  #panel-manual input[type="date"]{width:100%!important}
 }
 </style>
 </head>
@@ -278,25 +282,48 @@ select.inp option{background:#0b1518}
         <div class="card">
           <div class="ctitle"><div class="ci">📝</div> حجز يدوي جديد</div>
           <div class="hint hint-teal">احجز وقتاً مباشرة بدون موافقة الزبون</div>
-          <div style="display:grid;gap:11px">
-            <div class="row2">
-              <div><div class="ilabel">الملعب</div>
-                <select class="inp" id="mCourt">
-                  <option value="1">🔵 الملعب الأول – بادل</option>
-                  <option value="2">🟢 الملعب الثاني – بادل</option>
-                  <option value="3">🟠 ملعب Padbol</option>
-                </select>
-              </div>
-              <div><div class="ilabel">التاريخ</div><input type="date" class="inp" id="mDate"></div>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px">
+
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div class="ilabel">الملعب</div>
+              <select class="inp" id="mCourt" style="width:100%;box-sizing:border-box">
+                <option value="1">🔵 الملعب الأول – بادل</option>
+                <option value="2">🟢 الملعب الثاني – بادل</option>
+                <option value="3">🟠 ملعب Padbol</option>
+              </select>
             </div>
-            <div class="row2">
-              <div><div class="ilabel">من</div><input type="time" class="inp" id="mFrom"></div>
-              <div><div class="ilabel">إلى</div><input type="time" class="inp" id="mTo"></div>
+
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div class="ilabel">التاريخ</div>
+              <input type="date" class="inp" id="mDate" style="width:100%;box-sizing:border-box">
             </div>
-            <div><div class="ilabel">اسم الزبون</div><input type="text" class="inp" id="mName" placeholder="الاسم الكامل"></div>
-            <div><div class="ilabel">رقم الجوال</div><input type="tel" class="inp" id="mPhone" placeholder="07xxxxxxxxx" dir="ltr"></div>
-            <div><div class="ilabel">السعر (د.ع)</div><input type="number" class="inp" id="mPrice" placeholder="40000"></div>
-            <button class="btn btn-teal" id="manualBookBtn">📝 تأكيد الحجز اليدوي</button>
+
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div class="ilabel">من</div>
+              <input type="time" class="inp" id="mFrom" style="width:100%;box-sizing:border-box">
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div class="ilabel">إلى</div>
+              <input type="time" class="inp" id="mTo" style="width:100%;box-sizing:border-box">
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div class="ilabel">اسم الزبون</div>
+              <input type="text" class="inp" id="mName" placeholder="الاسم الكامل" style="width:100%;box-sizing:border-box">
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div class="ilabel">رقم الجوال</div>
+              <input type="tel" class="inp" id="mPhone" placeholder="07xxxxxxxxx" dir="ltr" style="width:100%;box-sizing:border-box">
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div class="ilabel">السعر (د.ع)</div>
+              <input type="number" class="inp" id="mPrice" placeholder="40000" style="width:100%;box-sizing:border-box">
+            </div>
+
+            <button class="btn btn-teal" id="manualBookBtn" style="width:100%;box-sizing:border-box;margin-top:4px">✅ تأكيد الحجز اليدوي</button>
           </div>
         </div>
         <div class="card">
@@ -1178,7 +1205,7 @@ function setupUI() {
 // ══════════════════════════════════
 function pad(n) { return n < 10 ? '0'+n : ''+n; }
 function timeToMins(t) { const [h,m]=t.split(':').map(Number); return h*60+m; }
-function fmt(d) { if(!d)return''; return new Date(d+'T00:00:00').toLocaleDateString('ar-SA',{weekday:'short',day:'numeric',month:'short'}); }
+function fmt(d) { if(!d)return''; return new Date(d+'T00:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}); }
 function timeAgo(ts) {
   const s=(Date.now()-ts)/1000;
   if(s<60)return'الآن';
