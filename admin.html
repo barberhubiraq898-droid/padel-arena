@@ -62,7 +62,7 @@ select.inp option{background:#0b1518}
 .sl{font-size:11px;color:var(--muted);margin-top:5px}
 
 /* TABS */
-.tabs{display:flex!important;flex-direction:row!important;border-bottom:1px solid var(--border);margin-bottom:22px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0;flex-wrap:nowrap!important;position:relative;z-index:1}
+.tabs{display:flex;flex-direction:row;border-bottom:1px solid var(--border);margin-bottom:22px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0;flex-wrap:nowrap;position:relative;z-index:1}
 .tab{display:inline-flex!important;flex-direction:row!important;align-items:center!important;padding:10px 12px!important;font-family:'Cairo',sans-serif!important;font-size:12px!important;color:var(--muted);background:transparent!important;border:none!important;border-bottom:2px solid transparent!important;margin-bottom:-1px;cursor:pointer;transition:all 0.2s;white-space:nowrap!important;flex-shrink:0!important;width:auto!important;height:auto!important}
 .tab:hover{color:var(--text)}
 .tab.on{color:var(--teal);border-bottom-color:var(--teal);font-weight:700}
@@ -182,7 +182,7 @@ select.inp option{background:#0b1518}
   .days-sel{grid-template-columns:repeat(4,1fr)}
   .sch-grid{grid-template-columns:repeat(4,1fr)}
   .row3{grid-template-columns:1fr 1fr}
-  .tabs{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;overflow-x:auto!important;position:sticky!important;top:52px!important;z-index:20!important;background:var(--bg)!important}
+  .tabs{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;overflow-x:auto!important;position:relative!important;z-index:1!important;background:var(--bg)!important}
   .tab{display:block!important;flex-direction:unset!important;width:auto!important;padding:10px 14px!important;font-size:12px!important;white-space:nowrap!important;flex-shrink:0!important}
   .h-logo svg{height:28px!important}
   .h-actions{gap:4px!important}
@@ -286,7 +286,7 @@ select.inp option{background:#0b1518}
 
             <div style="display:flex;flex-direction:column;gap:5px">
               <div class="ilabel">الملعب</div>
-              <select class="inp" id="mCourt" style="width:100%;box-sizing:border-box">
+              <select class="inp" id="mCourt" style="width:100%;box-sizing:border-box;position:relative;z-index:5">
                 <option value="1">🔵 الملعب الأول – بادل</option>
                 <option value="2">🟢 الملعب الثاني – بادل</option>
                 <option value="3">🟠 ملعب Padbol</option>
