@@ -473,12 +473,15 @@ window.selectDur = function(el) {
 // ══════════════════════════════════
 // LOAD DATA
 // ══════════════════════════════════
+let blacklist = {};
+
 async function loadData() {
   const today = new Date().toISOString().split('T')[0];
-  [slots, bookings, settings] = await Promise.all([
+  [slots, bookings, settings, blacklist] = await Promise.all([
     fbQuery('/slots', today).then(d=>d||{}),
     fbQuery('/bookings', today).then(d=>d||{}),
-    fbGet('/settings').then(d=>d||{})
+    fbGet('/settings').then(d=>d||{}),
+    fbGet('/blacklist').then(d=>d||{})
   ]);
   updateHoursBar();
   buildDates();
@@ -599,7 +602,9 @@ function renderCourt(court) {
   daySlots.forEach(([key,s]) => {
     // Check if this slot is booked directly OR is part of a multi-hour booking
     const isBooked = Object.values(bookings).some(b=>
-      b.slotId===key || (b.allSlots && b.allSlots.includes(key))
+      b.slotId===key ||
+      (b.allSlots && b.allSlots.includes(key)) ||
+      (b.subSlotIds && b.subSlotIds.includes(key))
     );
     // For multi-hour: check if enough consecutive slots are free
     const canBook = !isBooked && canBookDuration(court, selDate, s.from, dur);
@@ -651,7 +656,9 @@ function canBookDuration(court, date, from, durMins) {
     if (!found) return false;
     const [slotKey] = found;
     if (Object.values(bookings).some(b=>
-      b.slotId===slotKey || (b.allSlots && b.allSlots.includes(slotKey))
+      b.slotId===slotKey ||
+      (b.allSlots && b.allSlots.includes(slotKey)) ||
+      (b.subSlotIds && b.subSlotIds.includes(slotKey))
     )) return false;
     cur += 60;
   }
@@ -698,6 +705,13 @@ async function doBook(withWa) {
   const phoneClean = phone.replace(/\D/g,'');
   if (!/^07[78]\d{8}$/.test(phoneClean)) {
     toast('⚠️ الرقم يجب أن يكون 11 رقم ويبدأ بـ 077 أو 078', true);
+    return;
+  }
+
+  // فحص القائمة السوداء
+  const isBlocked = Object.values(blacklist).some(bl=>bl.phone===phoneClean);
+  if (isBlocked) {
+    toast('⛔ عذراً، لا يمكنك الحجز. تواصل مع الإدارة.', true);
     return;
   }
 

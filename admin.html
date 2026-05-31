@@ -69,7 +69,7 @@ select.inp option{background:#0b1518}
 .sl{font-size:11px;color:var(--muted);margin-top:5px}
 
 /* TABS */
-.tabs{display:flex!important;flex-direction:row!important;border-bottom:1px solid var(--border);overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0;flex-wrap:nowrap!important;position:fixed!important;top:56px!important;left:0!important;right:0!important;width:100%!important;z-index:95!important;background:var(--black)!important;padding:0 14px;box-shadow:0 2px 8px rgba(0,0,0,0.5)}
+.tabs{display:flex!important;flex-direction:row!important;border-bottom:1px solid var(--border);overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0;flex-wrap:nowrap!important;position:fixed!important;top:56px!important;left:0!important;right:0!important;width:100%!important;z-index:95!important;background:var(--black)!important;padding:0 14px;box-shadow:0 2px 8px rgba(0,0,0,0.5);-webkit-tap-highlight-color:transparent}
 .tabs::-webkit-scrollbar{display:none}
 .tabs-spacer{height:48px;margin-bottom:22px;display:block}
 .tab{display:inline-flex!important;flex-direction:row!important;align-items:center!important;padding:10px 12px!important;font-family:'Cairo',sans-serif!important;font-size:12px!important;color:var(--muted);background:transparent!important;border:none!important;border-bottom:2px solid transparent!important;margin-bottom:-1px;cursor:pointer;transition:all 0.2s;white-space:nowrap!important;flex-shrink:0!important;width:auto!important;height:auto!important}
@@ -189,6 +189,14 @@ select.inp option{background:#0b1518}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--teal);border-radius:12px;padding:11px 20px;font-size:13px;font-weight:700;color:var(--teal);z-index:300;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);white-space:nowrap;box-shadow:0 8px 28px rgba(0,200,200,0.2)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.err{border-color:var(--red);color:var(--red)}
+
+/* BLACKLIST */
+.bl-item{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;background:rgba(255,68,68,0.04);border:1px solid rgba(255,68,68,0.15);border-radius:11px;transition:all 0.2s;margin-bottom:7px}
+.bl-item:hover{border-color:rgba(255,68,68,0.3)}
+.bl-name{font-size:14px;font-weight:700;color:var(--red)}
+.bl-phone{font-size:12px;color:var(--muted);font-family:monospace;margin-top:2px}
+.bl-reason{font-size:11px;color:rgba(255,68,68,0.6);margin-top:3px}
+.bl-date{font-size:10px;color:var(--muted)}
 
 /* PWD */
 .pwd-hint{font-size:11px;color:var(--orange);background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:8px;padding:9px 12px;margin-bottom:12px}
@@ -313,6 +321,7 @@ select.inp option{background:#0b1518}
       <button class="tab" data-tab="manual">حجز يدوي</button>
       <button class="tab" data-tab="slots">الأوقات</button>
       <button class="tab" data-tab="notifs">الإشعارات</button>
+      <button class="tab" data-tab="blacklist">🚫 قائمة سوداء</button>
       <button class="tab" data-tab="settings">الإعدادات</button>
     </div>
 
@@ -390,6 +399,13 @@ select.inp option{background:#0b1518}
             </div>
 
             <button class="btn btn-teal" id="manualBookBtn" style="width:100%;box-sizing:border-box;margin-top:4px">✅ تأكيد الحجز اليدوي</button>
+
+            <!-- زر وصّل الزبون عبر واتساب -->
+            <button class="btn" id="waConnectBtn" type="button"
+              style="width:100%;box-sizing:border-box;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:700">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              وصّل الزبون (واتساب)
+            </button>
           </div>
         </div>
         <div class="card">
@@ -520,6 +536,35 @@ select.inp option{background:#0b1518}
           <button class="bsm bsm-r" id="deleteAllNotifsBtn" style="margin-right:6px">🗑️ حذف الكل</button>
         </div>
         <div class="nlist" id="notifList"></div>
+      </div>
+    </div>
+
+    <!-- ══ BLACKLIST TAB ══ -->
+    <div class="panel" id="panel-blacklist">
+      <div class="grid2">
+        <div class="card">
+          <div class="ctitle"><div class="ci">🚫</div> إضافة إلى القائمة السوداء</div>
+          <div class="hint" style="background:rgba(255,68,68,0.05);border-color:rgba(255,68,68,0.2);color:var(--red)">الأشخاص في هذه القائمة لن يتمكنوا من الحجز</div>
+          <div style="display:grid;gap:12px;margin-top:14px">
+            <div>
+              <div class="ilabel">الاسم</div>
+              <input type="text" class="inp" id="blName" placeholder="اسم الشخص">
+            </div>
+            <div>
+              <div class="ilabel">رقم الجوال</div>
+              <input type="tel" class="inp" id="blPhone" placeholder="07xxxxxxxxx" dir="ltr">
+            </div>
+            <div>
+              <div class="ilabel">سبب الحظر (اختياري)</div>
+              <input type="text" class="inp" id="blReason" placeholder="مثال: إلغاء متكرر">
+            </div>
+            <button class="btn btn-red" id="addBlacklistBtn">🚫 إضافة إلى القائمة السوداء</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ctitle"><div class="ci">📋</div> الأشخاص المحظورون <span style="font-size:11px;color:var(--muted);font-weight:400;margin-right:8px" id="blCount"></span></div>
+          <div id="blacklistItems"><div class="empty">لا يوجد أحد في القائمة السوداء</div></div>
+        </div>
       </div>
     </div>
 
@@ -692,7 +737,7 @@ async function doLogin() {
 // ══════════════════════════════════
 // STATE
 // ══════════════════════════════════
-let slots = {}, bookings = {}, notifs = {}, settings = {};
+let slots = {}, bookings = {}, notifs = {}, settings = {}, blacklist = {};
 let slotFilter = 'today', bookFilter = 'all';
 let selWorkDays = [0,1,2,3,4,5,6];
 const DAY_SHORT = ['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
@@ -722,11 +767,12 @@ async function init() {
 
 async function loadAll() {
   const today = new Date().toISOString().split('T')[0];
-  [slots, bookings, notifs, settings] = await Promise.all([
+  [slots, bookings, notifs, settings, blacklist] = await Promise.all([
     fbQuery('/slots', today).then(d=>d||{}),
     fbQuery('/bookings', today).then(d=>d||{}),
     fbGet('/notifications').then(d=>d||{}),
-    fbGet('/settings').then(d=>d||{})
+    fbGet('/settings').then(d=>d||{}),
+    fbGet('/blacklist').then(d=>d||{})
   ]);
 
   // Check for new notifications
@@ -752,6 +798,7 @@ function renderAll() {
   renderManualBookings();
   renderBoard();
   updateNotifBadge();
+  renderBlacklist();
 }
 
 // ══════════════════════════════════
@@ -856,6 +903,7 @@ function renderBookings() {
       <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0;margin-right:10px">
         <div class="bphone" dir="ltr">${b.phone}</div>
         <button class="bsm bsm-r" onclick="cancelBook('${key}')">إلغاء</button>
+        <button class="bsm" onclick="addToBlacklist('${b.name.replace(/'/g,"\\'")}','${b.phone}')" style="background:rgba(80,0,0,0.25);color:#ff6b6b;border:1px solid rgba(255,68,68,0.35);font-size:10px;padding:3px 8px">🚫 قائمة سوداء</button>
       </div>
     </div>`;
   }).join('');
@@ -1242,18 +1290,22 @@ window.doManualBook = async function() {
   const price = parseInt(document.getElementById('mPrice').value) || 0;
 
   if (!date||!from||!to||!name||!phone) { toast('⚠️ أكمل جميع الحقول',true); return; }
-  if (from >= to && timeToMins(to) > timeToMins(from) - 1) { /* ok */ }
 
   // التحقق من رقم العراقي — 11 رقم يبدأ بـ 077 أو 078
   const phoneClean2 = phone.replace(/\D/g,'');
   if (!/^07[78]\d{8}$/.test(phoneClean2)) { toast('⚠️ الرقم يجب أن يكون 11 رقم ويبدأ بـ 077 أو 078',true); return; }
-  if (from >= to) { toast('⚠️ وقت النهاية يجب أن يكون بعد البداية',true); return; }
 
   // ✅ منع حجز أوقات ماضية
   const today = new Date().toISOString().split('T')[0];
   const nowMins = new Date().getHours()*60 + new Date().getMinutes();
   if (date < today) { toast('⚠️ لا يمكن الحجز في تاريخ ماضٍ',true); return; }
   if (date === today && timeToMins(from) < nowMins) { toast('⚠️ لا يمكن الحجز في وقت مضى',true); return; }
+
+  // حساب النهاية (مع دعم تجاوز منتصف الليل)
+  const fromMinsTotal = timeToMins(from);
+  const dur2 = parseInt(document.getElementById('mDur').value || '60');
+  const toMinsCalc = fromMinsTotal + dur2;
+  const crossMid = toMinsCalc >= 1440;
 
   // Create or find slot — and create hourly sub-slots for board display
   const slotKey = 'slot_'+date.replace(/-/g,'')+'_c'+court+'_'+from.replace(':','');
@@ -1263,22 +1315,17 @@ window.doManualBook = async function() {
   }
 
   // Also create intermediate hourly slots so board shows the full duration
-  const fromMinsTotal = timeToMins(from);
-  const toMinsTotal = timeToMins(to);
-  // إذا النهاية أصغر من البداية = عبرت منتصف الليل
-  const durationMins = toMinsTotal > fromMinsTotal
-    ? toMinsTotal - fromMinsTotal
-    : (1440 - fromMinsTotal) + toMinsTotal;
-
   const subSlotKeys = [slotKey];
   let cur = fromMinsTotal + 60;
   let curDate = date;
+  const durationMins = dur2;
   for (let elapsed = 60; elapsed < durationMins; elapsed += 60) {
     if (cur >= 1440) { cur -= 1440; curDate = nextDay(date); }
     const hh = Math.floor(cur / 60) % 24, mm = cur % 60;
     const midFrom = pad(hh) + ':' + pad(mm);
     const midToM = cur + 60;
-    const midTo = pad(Math.floor(midToM/60)%24) + ':' + pad(midToM%60);
+    const midToH = Math.floor(midToM / 60) % 24;
+    const midTo = pad(midToH) + ':' + pad(midToM % 60);
     const subKey = 'slot_'+curDate.replace(/-/g,'')+'_c'+court+'_'+midFrom.replace(':','');
     if (!slots[subKey]) {
       await fbSet('/slots/'+subKey, {court, date: curDate, from: midFrom, to: midTo, subOf: slotKey});
@@ -1288,12 +1335,21 @@ window.doManualBook = async function() {
     cur += 60;
   }
 
-  // Check time conflict (overlap check, not just exact key)
+  // Check time conflict
   const fromMins = timeToMins(from), toMins = timeToMins(to);
-  const conflict = Object.values(bookings).some(b =>
-    b.court === court && b.date === date &&
-    timeToMins(b.from) < toMins && timeToMins(b.to) > fromMins
-  );
+  const conflict = Object.values(bookings).some(b => {
+    if (b.court !== court) return false;
+    // تحقق من تعارض مع حجوزات نفس اليوم أو اليوم التالي (للحجوزات التي تتجاوز منتصف الليل)
+    const bFrom = timeToMins(b.from), bTo = timeToMins(b.to);
+    if (b.date === date) {
+      if (bTo > bFrom) return bFrom < toMins && bTo > fromMins;
+      return bFrom < toMins; // الحجز القديم يتجاوز منتصف الليل
+    }
+    if (b.date === nextDay(date) && crossMid) {
+      return bFrom < toMins; // الجزء الثاني من حجزنا يتعارض
+    }
+    return false;
+  });
   if (conflict) { toast('⚠️ يوجد تعارض مع حجز آخر في نفس الوقت',true); return; }
 
   const cName = court==='1'?'ملعب 1':court==='2'?'ملعب 2':'Padbol';
@@ -1369,7 +1425,11 @@ function renderBoard() {
 
   el.innerHTML = courts.map(ct => {
     const courtSlots = Object.entries(slots)
-      .filter(([k,s]) => s.court === ct.id && s.date === date && !s.subOf)
+      .filter(([k,s]) => {
+        if (s.court !== ct.id || s.date !== date) return false;
+        // أظهر كل السلوتات بما فيها sub-slots من حجوزات منتصف الليل
+        return true;
+      })
       .sort((a,b) => a[1].from > b[1].from ? 1 : -1);
 
     if (!courtSlots.length) return `
@@ -1378,32 +1438,43 @@ function renderBoard() {
         <div style="font-size:12px;color:var(--muted);padding:12px">لا توجد أوقات مضافة لهذا اليوم</div>
       </div>`;
 
-    // جيب كل حجوزات هذا الملعب واليوم
+    // جيب حجوزات هذا الملعب: اليوم الحالي + اليوم السابق (للحجوزات التي تتجاوز منتصف الليل)
+    const prevDate = (function() {
+      const d = new Date(date + 'T12:00:00');
+      d.setDate(d.getDate() - 1);
+      return d.toISOString().split('T')[0];
+    })();
     const courtBookings = Object.values(bookings).filter(b =>
-      b.court === ct.id && b.date === date
+      b.court === ct.id && (b.date === date || b.date === prevDate)
     );
 
     const slotsHtml = courtSlots.map(([key,s]) => {
       const slotFrom = timeToMins(s.from);
-      const slotTo   = timeToMins(s.to);
 
-      // تحقق: هل هذا الـ slot يقع ضمن مدة أي حجز؟ (مع دعم تجاوز منتصف الليل)
       const bk = courtBookings.find(b => {
         const bFrom = timeToMins(b.from);
         const bTo   = timeToMins(b.to);
-        const dur   = bTo > bFrom ? bTo - bFrom : (1440 - bFrom) + bTo;
-        // تحقق من كل ساعة في الحجز
-        for (let e = 0; e < dur; e += 60) {
-          const checkMins = (bFrom + e) % 1440;
-          const checkDate = (bFrom + e) >= 1440 ? nextDay(b.date) : b.date;
-          if (checkMins === slotFrom && checkDate === s.date) return true;
+        const crossesMidnight = bTo <= bFrom; // النهاية أصغر من البداية = تجاوز منتصف الليل
+
+        if (!crossesMidnight) {
+          // حجز عادي: نفس اليوم، السلوت بين البداية والنهاية
+          return b.date === s.date && slotFrom >= bFrom && slotFrom < bTo;
+        } else {
+          // حجز يتجاوز منتصف الليل
+          // الجزء الأول: في يوم الحجز نفسه (من bFrom حتى 24:00)
+          if (b.date === s.date && slotFrom >= bFrom) return true;
+          // الجزء الثاني: في اليوم التالي (من 00:00 حتى bTo)
+          if (nextDay(b.date) === s.date && slotFrom < bTo) return true;
+          return false;
         }
-        return false;
       });
 
       const cls   = bk ? (bk.manual ? 'manual' : 'booked') : 'free';
       const label = bk ? (bk.name.length > 10 ? bk.name.slice(0,10)+'…' : bk.name) : 'متاح';
-      const dur   = bk ? ` · ${(timeToMins(bk.to)-timeToMins(bk.from))/60}س` : '';
+      const bkDurMins = bk ? (timeToMins(bk.to) > timeToMins(bk.from)
+        ? timeToMins(bk.to) - timeToMins(bk.from)
+        : 1440 - timeToMins(bk.from) + timeToMins(bk.to)) : 0;
+      const dur   = bk ? ` · ${Math.round(bkDurMins/60)}س` : '';
       return `<div class="board-slot ${cls}">
         <div class="board-slot-time">${to12(s.from)}</div>
         <div class="board-slot-name">${label}${dur}</div>
@@ -1478,6 +1549,69 @@ async function autoCleanup() {
 }
 
 // ══════════════════════════════════
+// BLACKLIST
+// ══════════════════════════════════
+function renderBlacklist() {
+  const el = document.getElementById('blacklistItems');
+  if (!el) return;
+  const entries = Object.entries(blacklist).sort((a,b)=>b[1].ts-a[1].ts);
+  const countEl = document.getElementById('blCount');
+  if (countEl) countEl.textContent = `(${entries.length})`;
+  if (!entries.length) { el.innerHTML='<div class="empty">🚫 القائمة السوداء فارغة</div>'; return; }
+  el.innerHTML = entries.map(([key,p])=>`
+    <div class="bl-item">
+      <div>
+        <div class="bl-name">🚫 ${p.name}</div>
+        <div class="bl-phone" dir="ltr">${p.phone}</div>
+        ${p.reason?`<div class="bl-reason">السبب: ${p.reason}</div>`:''}
+        <div class="bl-date">${fmt(p.date||new Date().toISOString().split('T')[0])}</div>
+      </div>
+      <button class="bsm bsm-g" onclick="removeBlacklist('${key}')">رفع الحظر</button>
+    </div>`).join('');
+}
+
+window.addToBlacklist = async function() {
+  const name = document.getElementById('blName').value.trim();
+  const phone = document.getElementById('blPhone').value.trim().replace(/\D/g,'');
+  const reason = document.getElementById('blReason').value.trim();
+  if (!name || !phone) { toast('⚠️ يرجى إدخال الاسم والرقم', true); return; }
+  const key = 'bl_' + phone + '_' + Date.now();
+  const data = { name, phone, reason, date: new Date().toISOString().split('T')[0], ts: Date.now() };
+  await fbSet('/blacklist/'+key, data);
+  blacklist[key] = data;
+  renderBlacklist();
+  ['blName','blPhone','blReason'].forEach(id=>document.getElementById(id).value='');
+  toast('🚫 تم إضافة الشخص إلى القائمة السوداء');
+};
+
+window.removeBlacklist = async function(key) {
+  confirmDialog('سيتم رفع الحظر عن هذا الشخص. هل أنت متأكد؟', async () => {
+    await fbDelete('/blacklist/'+key);
+    delete blacklist[key];
+    renderBlacklist();
+    toast('✅ تم رفع الحظر');
+  });
+};
+
+// ══════════════════════════════════
+// WHATSAPP CONNECT BUTTON
+// ══════════════════════════════════
+function buildWaMessage() {
+  const name  = document.getElementById('mName').value.trim();
+  const phone = document.getElementById('mPhone').value.trim().replace(/\D/g,'');
+  const court = document.getElementById('mCourt');
+  const courtTxt = court ? court.options[court.selectedIndex].text : '';
+  const date  = document.getElementById('mDate').value;
+  const from  = document.getElementById('mFrom').value;
+  const to    = document.getElementById('mTo').value;
+  const price = document.getElementById('mPriceDisplay').textContent || '';
+  if (!phone) { toast('⚠️ أدخل رقم الجوال أولاً', true); return null; }
+  const venue = settings.venueName || 'ملعب البادل';
+  const msg = `مرحباً ${name||''}! 👋\nتم تأكيد حجزك في ${venue} 🎾\n📍 ${courtTxt}\n📅 ${fmt(date)}\n⏰ ${to12(from)} – ${to12(to)}\n💰 ${price}\nنتطلع لرؤيتك!`;
+  return { phone, msg };
+}
+
+// ══════════════════════════════════
 // UI SETUP
 // ══════════════════════════════════
 function setupUI() {
@@ -1526,6 +1660,12 @@ function setupUI() {
   document.getElementById('saveVenueBtn').onclick = window.saveVenueSettings;
   document.getElementById('markAllBtn').onclick = window.markAllRead;
   document.getElementById('manualBookBtn').onclick = window.doManualBook;
+  document.getElementById('addBlacklistBtn').onclick = window.addToBlacklist;
+  document.getElementById('waConnectBtn').onclick = function() {
+    const r = buildWaMessage();
+    if (!r) return;
+    window.open(`https://wa.me/${r.phone}?text=${encodeURIComponent(r.msg)}`, '_blank');
+  };
   document.getElementById('deleteAllNotifsBtn').onclick = async function() {
     const keys = Object.keys(notifs);
     if (!keys.length) { toast('لا توجد إشعارات'); return; }
@@ -1546,6 +1686,28 @@ function setupUI() {
     boardDate.oninput = renderBoard;
   }
 }
+
+// ══════════════════════════════════
+// ADD TO BLACKLIST FROM BOOKING
+// ══════════════════════════════════
+window.addToBlacklist = function(name, phone) {
+  // Fill the blacklist form fields
+  document.getElementById('blName').value = name;
+  document.getElementById('blPhone').value = phone;
+  document.getElementById('blReason').value = 'حجز ولم يحضر';
+
+  // Switch to the blacklist tab using the same mechanism as the rest of the app
+  const blTab = document.querySelector('.tab[data-tab="blacklist"]');
+  if (blTab) blTab.click();
+
+  // Scroll to top and focus reason field
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(() => {
+    document.getElementById('blReason').focus();
+  }, 400);
+
+  toast('📋 تم نقل بيانات اللاعب — راجع سبب الحظر واضغط إضافة');
+};
 
 // ══════════════════════════════════
 // HELPERS
@@ -1594,7 +1756,10 @@ function updateMTo() {
   const toM = total % 60;
   const toVal = pad(toH) + ':' + pad(toM);
   document.getElementById('mTo').value = toVal;
-  display.textContent = to12(toVal);
+  // إذا تجاوز منتصف الليل، نعرض تنبيه
+  const crossesMidnight = total >= 1440;
+  display.textContent = to12(toVal) + (crossesMidnight ? ' (اليوم التالي)' : '');
+  display.style.color = crossesMidnight ? 'var(--orange)' : 'var(--teal)';
 }
 window.updateMTo = updateMTo;
 
